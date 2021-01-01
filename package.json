@@ -4,7 +4,7 @@
   "description": "## Team Members",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage --passWithNoTests"
   },
   "repository": {
     "type": "git",
