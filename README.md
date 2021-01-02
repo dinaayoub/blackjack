@@ -7,6 +7,10 @@
 * Dina Ayoub
 * Matt Ravenmoore
 
+## MVP
+
+* REST API
+
 ## Tests
 
 ### Usage
@@ -16,6 +20,3 @@
 ### List of tests
 
 * [] Insert test description here
-
-
-
