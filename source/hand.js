@@ -9,8 +9,6 @@ class Hand{
     }
 
     addCard(card){
-        //should check here if the number of cards left in the shoe needs shuffling?
-        console.log(card);
         this.cards.push(card);
     }
 }

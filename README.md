@@ -1,5 +1,9 @@
 # Black Jack Discord Bot
 
+## Deployment
+
+[Heroku Deployment](https://latte-blackjack.herokuapp.com/)
+
 ## Team Members
 
 * Aysia Brown

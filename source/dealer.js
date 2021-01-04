@@ -3,13 +3,12 @@
 const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require("./hand");
-var numberOfDecks = 6; //this should be changeable
+var numberOfDecks = 1; //this should be changeable
 var maxPlayers = 7;
 
 class Dealer {
     constructor() {
         this.shoe = new Shoe(numberOfDecks);
-        console.log(this.shoe);
         this.maxPlayers = maxPlayers
         this.dealer = new Player('dealer');
         this.currentState = 'start';
@@ -23,8 +22,8 @@ class Dealer {
         this.round.forEach(hand => {
             hand.addCard(this.shoe.getOneCard());
             
-            console.log('PLAYER ', hand.player);
-            console.log('\tHAND : ', hand.cards);
+            // console.log('PLAYER ', hand.player);
+            // console.log('\tHAND : ', hand.cards);
         });
         //then deal the second card.
         this.round.forEach(hand => {
@@ -75,7 +74,7 @@ class Dealer {
                 });
                 var dealerRound = new Hand('dealer'); //{ player: this.dealer, hand: new Hand(this.shoe.getOneCard()) };
                 this.round.push(dealerRound);
-                console.log('ROUND HANDS ==============',this.round);
+                //console.log('ROUND HANDS ==============',this.round);
                 this.currentState = 'bets';
                 this.currentPlayer = 0;
                 break;
@@ -97,7 +96,7 @@ class Dealer {
                 break;
             case 'player':
                 //deals with one player at a time. 
-                console.log(this.currentPlayer);
+                //console.log(this.currentPlayer);
                 //once this player busts or stands 
                 if (this.currentPlayer === this.round.length - 1)
                     this.currentState = 'dealer'
@@ -133,7 +132,7 @@ var dealer = new Dealer();
 dealer.addPlayer('dina');
 dealer.addPlayer('owais');
 console.log("PLAYERS: ", dealer.players);
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 100; i++) {
     dealer.next();
 }
 
