@@ -7,8 +7,15 @@
 * Dina Ayoub
 * Matt Ravenmoore
 
-## Task Management
-* [Trello](https://trello.com/b/bgJWAadZ/blackjack)
+## Project Management
+### Task Management 
+* [Trello Board](https://trello.com/b/bgJWAadZ/blackjack)
+
+### Domain Modeling
+
+### Entity Relationship Diagram
+![Users](./assets/erd.png)
+
 
 ## Tests
 
