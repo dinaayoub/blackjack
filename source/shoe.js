@@ -6,7 +6,11 @@ class Shoe {
     constructor(numberOfDecks) {
         this.shoe = [];
         this.numberOfDecks = numberOfDecks;
-        for (let i = 0; i < numberOfDecks; i++) {
+        this.fillShoe();
+    }
+
+    fillShoe() {
+        for (let i = 0; i < this.numberOfDecks; i++) {
             var deck = new Deck();
             this.shoe = [...this.shoe, ...deck.deck];
         }
@@ -25,6 +29,10 @@ class Shoe {
 
     getOneCard() {
        return this.shoe.shift(); 
+       //it might be more efficient if we use an actual queue to make this operation O(1) instead of O(n)?
+
+       //need to reshuffle if shoe.length < 0.2 * (number of decks * 52)
+       //fillShoe();
     }
 }
 

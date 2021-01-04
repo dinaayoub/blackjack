@@ -1,15 +1,16 @@
 'use strict'
 
 const Shoe = require('./shoe');
-const Hand = require('./hand');
-var numberOfDecks = 6; //this should be changeable
 const Player = require('./player');
-const Round = require('./round');
+const Hand = require("./hand");
+var numberOfDecks = 6; //this should be changeable
+var maxPlayers = 7;
 
-class BlackJackDealer {
+class Dealer {
     constructor() {
         this.shoe = new Shoe(numberOfDecks);
-        this.maxPlayers = 6;
+        console.log(this.shoe);
+        this.maxPlayers = maxPlayers
         this.dealer = new Player('dealer');
         this.currentState = 'start';
         this.players = [];
@@ -19,15 +20,18 @@ class BlackJackDealer {
     deal() {
         //deal a new hand
         //for each player, deal the first card. 
-        this.round.forEach(round => {
-            round.hand.addCard(this.shoe.getOneCard());
+        this.round.forEach(hand => {
+            hand.addCard(this.shoe.getOneCard());
+            
+            console.log('PLAYER ', hand.player);
+            console.log('\tHAND : ', hand.cards);
         });
         //then deal the second card.
-        this.round.forEach(round => {
-            round.hand.addCard(this.shoe.getOneCard());
-            
-            console.log('PLAYER ', round.player);
-            console.log('\tHAND : ', round.hand);
+        this.round.forEach(hand => {
+            hand.addCard(this.shoe.getOneCard());
+
+            console.log('PLAYER ', hand.player);
+            console.log('\tHAND : ', hand.cards);
         })
     }
 
@@ -35,7 +39,6 @@ class BlackJackDealer {
         //instead of returning table is full, maybe spin up a new table in a different discord channel? 
         if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
         this.players.push(new Player(userID));
-
     }
 
     removePlayer(userID) {
@@ -68,23 +71,24 @@ class BlackJackDealer {
                 this.round = [];
                 if (this.players.length === 0) throw new Error('No players in the game');
                 this.players.forEach(player => {
-                    this.round.push(new Round(player))
+                    this.round.push(new Hand(player))
                 });
-                var dealerRound = new Round(this.dealer); //{ player: this.dealer, hand: new Hand(this.shoe.getOneCard()) };
+                var dealerRound = new Hand('dealer'); //{ player: this.dealer, hand: new Hand(this.shoe.getOneCard()) };
                 this.round.push(dealerRound);
+                console.log('ROUND HANDS ==============',this.round);
                 this.currentState = 'bets';
                 this.currentPlayer = 0;
                 break;
             case 'bets':
                 //places one bet at a time. dealer does not bet. 
                 //the dealer doesn't bet and is the last person in the round, so current players are from 0 to length - 2. 
-                if (this.currentPlayer < this.round.length - 2)
+                if (this.currentPlayer < this.round.length - 2) {
                     this.currentPlayer++;
-                else
-                    {
-                        this.currentState = 'deal';
-                        this.currentPlayer = 0;
-                    }
+                }
+                else {
+                    this.currentState = 'deal';
+                    this.currentPlayer = 0;
+                }
                 break;
             case 'deal':
                 //deals cards to everyone
@@ -110,13 +114,8 @@ class BlackJackDealer {
                 //do blah
                 this.currentState = 'start'
                 break;
-
         }
-
-
-
-        /*TODO: 
-
+        /* TODO: 
         - figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
         - implement stand, bet, hit
         - how much money does a player start off with?
@@ -124,18 +123,18 @@ class BlackJackDealer {
         - command line or discord bot "driver" that drives the game. 
         - return the current state to the driver from next()
         - dealer logic for hitting or standing. 
+        - create a mongo schema for users
+        - add the API routes
         */
-
     }
 }
 
-var dealer = new BlackJackDealer();
+var dealer = new Dealer();
 dealer.addPlayer('dina');
 dealer.addPlayer('owais');
 console.log("PLAYERS: ", dealer.players);
-for (let i = 0; i < 6; i++) {
+for (let i = 0; i < 10; i++) {
     dealer.next();
 }
-//console.log(shoe);
 
-module.exports = BlackJackDealer;
+module.exports = Dealer;
