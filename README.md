@@ -11,9 +11,19 @@
 * Dina Ayoub
 * Matt Ravenmoore
 
+## Project Management
+### Task Management 
+* [Trello Board](https://trello.com/b/bgJWAadZ/blackjack)
+
+### Domain Modeling
+
+### Entity Relationship Diagram
+![Users](./assets/erd.png)
+
 ## MVP
 
 * REST API
+
 
 ## Tests
 
