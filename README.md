@@ -1,5 +1,9 @@
 # Black Jack Discord Bot
 
+## Deployment
+
+[Heroku Deployment](https://latte-blackjack.herokuapp.com/)
+
 ## Team Members
 
 * Aysia Brown
@@ -16,6 +20,10 @@
 ### Entity Relationship Diagram
 ![Users](./assets/erd.png)
 
+## MVP
+
+* REST API
+
 
 ## Tests
 
@@ -26,6 +34,3 @@
 ### List of tests
 
 * [] Insert test description here
-
-
-
