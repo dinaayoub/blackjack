@@ -7,6 +7,9 @@
 * Dina Ayoub
 * Matt Ravenmoore
 
+## Task Management
+* [Trello](https://trello.com/b/bgJWAadZ/blackjack)
+
 ## Tests
 
 ### Usage
