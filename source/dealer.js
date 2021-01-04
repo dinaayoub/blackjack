@@ -21,7 +21,7 @@ class Dealer {
         //for each player, deal the first card. 
         this.round.forEach(hand => {
             hand.addCard(this.shoe.getOneCard());
-            
+
             // console.log('PLAYER ', hand.player);
             // console.log('\tHAND : ', hand.cards);
         });
