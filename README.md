@@ -12,18 +12,28 @@
 * Matt Ravenmoore
 
 ## Project Management
-### Task Management 
+
+### Task Management
+
 * [Trello Board](https://trello.com/b/bgJWAadZ/blackjack)
 
 ### Domain Modeling
 
 ### Entity Relationship Diagram
-![Users](./assets/erd.png)
+
+![Users](assets/erd.png)
+
+### UML Diagram
+
+![UML](assets/blackjack-uml.png)
+
+### Data Flow Diagram
+
+![Data Flow](assets/DataFlow401Midterm.png)
 
 ## MVP
 
 * REST API
-
 
 ## Tests
 
