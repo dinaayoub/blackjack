@@ -4,7 +4,7 @@ const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require('./hand');
 const e = require('express');
-var numberOfDecks = 1; //this should be changeable
+var numberOfDecks = 6; //this should be changeable
 var maxPlayers = 7;
 
 class Dealer {
@@ -17,7 +17,6 @@ class Dealer {
     this.players = [];
     this.round = [];
   }
-
 
   deal() {
     //deal a new hand
@@ -57,7 +56,6 @@ class Dealer {
     //hit the given user with one more card from the shoe. 
     this.round[currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
   }
-
 
   stand(userID) {
 
@@ -159,8 +157,9 @@ class Dealer {
       this.currentPlayerIndex++;
 
   }
+
   next(verb, amountToBet) {
-    //this will do whatever is next in the queue of operations based on current state
+    //this will do whatever is next in the queue of operations based on current state and current player
     console.log('CURRENT STATE = ', this.currentState);
     //sequence of events: https://bicyclecards.com/how-to-play/blackjack/
     //start of a round - copying the list of current players into this.round, adding the dealer to the round, updating the state to bets
