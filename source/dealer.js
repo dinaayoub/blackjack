@@ -66,6 +66,36 @@ class Dealer {
     });
   }
 
+  bet(amount) {
+    //find the hand associated with the current player by the index we are keepign track of
+    var currentPlayerHand = this.round[this.currentPlayerIndex];
+
+    //check if the player's bank has enough money
+    if (currentPlayerHand.player.bank >= amount) {
+      //add the bet to the player's hand
+      currentPlayerHand.bet = amount;
+      //remove the amount from the player's bank
+      currentPlayerHand.player.bank -= amount;
+      //need to update database
+    }
+    else {
+      //the player doesn't have enough money. ask them to buy in somehow?
+      return new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
+    }
+
+    //if next player is not the dealer, move on to the next player.
+    if (this.currentPlayerIndex < this.round.length - 2) {
+      this.currentPlayerIndex++;
+    }
+    //if the next player is the dealer, reset player index to 0 and change current state to 'deal' as betting is done for all players.
+    else if (this.currentPlayerIndex === this.round.length - 2) {
+      //next player is the dealer who doesn't bet, so move on to next()
+      this.currentPlayerIndex = 0;
+      this.currentState = 'deal';
+    }
+    //return currentPlayersHand;
+  }
+
   payout() {
     var dealerCount = this.round[this.round.length - 1].count; //get the count of the dealer's hand first. 
 
