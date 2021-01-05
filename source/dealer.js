@@ -52,18 +52,23 @@ class Dealer {
     this.players.delete(playerIndex);
   }
 
-  hit(currentPlayerIndex) {
+  hit() {
     //hit the given user with one more card from the shoe. 
-    this.round[currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
+    if(this.round[this.currentPlayerIndex].hand >= 21){
+      this.currentState = 'player';
+    } else {
+      this.round[this.currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
+      this.currentState = 'player';
+    }
   }
 
-  stand(userID) {
+  stand() {
     //the user does not want any other cards, and returns simply the hand.
-    this.round.forEach(hand => {
-      if (hand.player.id == userID) {
-        return hand;
-      }
-    });
+    if (this.currentPlayerIndex === this.round.length - 1) {
+      this.currentPlayerIndex = 0;
+    }
+    else
+      this.currentPlayerIndex++;
   }
 
   bet(amount) {
@@ -150,10 +155,21 @@ class Dealer {
     this.currentPlayerIndex = 0;
   }
 
-  player(verb) {
+  player() {
     // TODO :insert logics that
     // deals with one player at a time. prompting with actions available based on hand
-    // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+    this.round.forEach(hand => {
+      // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+      if(hand.count > 21){
+        this.currentPlayerIndex++;
+      } else if (hand.count === 21){
+        this.currentPlayerIndex++;
+      } else if (this.player.hit){
+        this.hit();
+      } else if (this.player.stand){
+        this.stand();
+      }
+    });
 
     //once this player busts or stands, update current index 
     if (this.currentPlayerIndex === this.round.length - 1)
@@ -174,33 +190,33 @@ class Dealer {
     //dealer action - hit or stand based on the rules. updates the state to payouts. 
     //payouts end of round. 
     switch (this.currentState) {
-      case 'start':
-        this.start();
-        break;
-      case 'bets': //places one bet at a time given the amount the bot/driver sent in
-        this.bet(amountToBet);
-        break;
-      case 'deal': //deals cards to everyone
-        this.deal();
-        break;
-      case 'player':
-        this.player(verb);
-        break;
-      case 'dealer':
-        //do
-        // if dealer hand count >= 17 perform hit action
-        // if dealer hand = 17 && > 21 stand
-        // if dealer hand > 21 status.bust
-        this.currentState = 'payout';
-        break;
-      case 'payout':
-        this.payout();
-        break;
+    case 'start':
+      this.start();
+      break;
+    case 'bets': //places one bet at a time given the amount the bot/driver sent in
+      this.bet(amountToBet);
+      break;
+    case 'deal': //deals cards to everyone
+      this.deal();
+      break;
+    case 'player':
+      this.player(verb);
+      break;
+    case 'dealer':
+      //do
+      // if dealer hand count >= 17 perform hit action
+      // if dealer hand = 17 && > 21 stand
+      // if dealer hand > 21 status.bust
+      this.currentState = 'payout';
+      break;
+    case 'payout':
+      this.payout();
+      break;
     }
     return (this.currentState);
     /* TODO: 
       - [x] figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
-      - [ ] implement stand
+      - [x] implement stand
       - [x] implement bet
       - [x] implement hit
       - [ ] how much money does a player start off with?
