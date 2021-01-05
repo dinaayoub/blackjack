@@ -8,22 +8,24 @@ const Users = require('../schema/user.schema');
 
 
 // get an existing player record 
-async function getPlayer(req, res) {
-  let userID = req.params.userID; // this will need to be translated to discord.js friendly lingo
+async function getPlayer(player) {
   let record;
   // checks if user already exists in db 
-  if(Users.find({userID: userID}).count() > 0) {
-    record = await Users.findOne({userID});
+  if(Users.find({userID: player.id}).count() > 0) {
+    // if so we will find and save the user to record 
+    record = await Users.findOne({userID: player.id});
   } else {
-    addNewPlayer();
+    // if not we will call addNewPlayer to the db
+    addNewPlayer(player);
   }
-  res.status(200).json(record);
+  return JSON.parse(record); // this might not return in a proper format
 }
 
 
 // create a new player record 
-async function addNewPlayer(req, res) {
-  let newRecord = new Users(req.body);
+async function addNewPlayer(player) {
+  // a new player is saved only with their userID and name
+  let newRecord = new Users({userID: player.id, name: player.name});
   return newRecord.save();
 }
 

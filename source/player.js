@@ -6,8 +6,9 @@ class Player {
     this.name = '';
     this.bank = 500;
     this.earnings = 0;
-    //this.currentEarnings = 0;
-    //get the user info from the db?
+    this.currentWins = 0;
+    this.currentLosses = 0;
+    this.currentPushes = 0;
   }
 }
 module.exports = Player;
