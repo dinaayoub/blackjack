@@ -163,12 +163,15 @@ class Dealer {
   }
 
   dealer() {
-    var houseCount = this.round[this.round.length - 1].count;
+    var houseCount = this.round[this.currentPlayerIndex].count;
     while (houseCount < 17) {
       this.hit(this.currentPlayerIndex);
+      this.round[this.currentPlayerIndex].status = 'active';
     }
     if (houseCount <= 21) {
       this.stand(this.currentPlayerIndex);
+      if (houseCount === 21) this.round[this.currentPlayerIndex].status = 'blackjack'
+      else this.round[this.currentPlayerIndex].status = 'stand';
     }
     else if (houseCount > 21) {
       this.round[currentPlayerIndex].status = 'bust';
