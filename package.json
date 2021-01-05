@@ -18,11 +18,8 @@
   },
   "homepage": "https://github.com/dinaayoub/blackjack#readme",
   "dependencies": {
-<<<<<<< HEAD
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-=======
->>>>>>> b8a0861fec347e8618f1718a56543179bd79b434
     "jest": "^26.6.3",
     "mongoose": "^5.11.10"
   }
