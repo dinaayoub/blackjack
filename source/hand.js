@@ -25,15 +25,14 @@ class Hand {
     }
     console.log(this.cards);
     this.cards.forEach(card => {
-<<<<<<< HEAD
-      console.log(card, 'im a card')
+      console.log(card, 'im a card');
+
       if (card.rank === Number) {
         card.value = card.rank;
-=======
+      }
       console.log(card);
       if (typeof (parseInt(card.rank)) == 'Number') {
         card.value = parseInt(card.rank);
->>>>>>> 15899c48595fd250f6bfd2afdc5959425b6ce1d7
         this.count += card.value;
       }
       if ((card.rank === 'J') || (card.rank === 'Q') || (card.rank === 'K')) {

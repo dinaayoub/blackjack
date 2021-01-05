@@ -3,7 +3,6 @@
 const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require('./hand');
-const e = require('express');
 var numberOfDecks = 1; //this should be changeable
 var maxPlayers = 7;
 
@@ -13,10 +12,10 @@ class Dealer {
     this.maxPlayers = maxPlayers;
     this.dealer = new Player('dealer');
     this.currentState = 'start';
-    this.currentPlayerIndex = 0;
     this.players = [];
     this.round = [];
   }
+
 
   deal() {
     //deal a new hand
@@ -32,9 +31,10 @@ class Dealer {
       hand.addCard(this.shoe.getOneCard());
 
 
-
+      hand.totalHandCount();
       console.log('PLAYER ', hand.player);
       console.log('HAND : ', hand.cards);
+      console.log('COUNT : ', hand.count);
     });
   }
 
@@ -54,7 +54,7 @@ class Dealer {
   hit(userID) {
     //hit the given user with one more card from the shoe. 
     this.round.forEach(hand => {
-      if (hand.player.id == userID) {
+      if(hand.player.id == userID) {
         hand.addCard(this.shoe.getOneCard());
       }
     });
@@ -120,6 +120,7 @@ class Dealer {
       this.currentState = 'bets';
       this.currentPlayer = 0;
       break;
+
     case 'bets':
       //places one bet at a time. dealer does not bet.
       // loop over players and prompt for bets each players input updates hand.bet value and decriments player.bank
@@ -132,37 +133,50 @@ class Dealer {
         this.currentPlayer = 0;
       }
       break;
+
     case 'deal':
       //deals cards to everyone
       this.deal();
+      
       this.currentState = 'player';
-      // if dealer hand === 21 Dealer.status == blackjack
+      // if dealers hand = 21 Dealer.status == blackjack and skip to pay out!
       break;
+      
     case 'player':
-      // TODO :insert logics that
-      // deals with one player at a time. prompting with actions available based on hand
-      // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
-      //console.log(this.currentPlayer);
       //once this player busts or stands 
+      // should this be async to wait for player input/?
+      var activePlayer= this.round.forEach(hand =>{
+        console.log(hand, 'Im a hand');
+        if(hand.count >21) this.player.status = 'bust';
+        if(hand.count < 21) {
+          console.log(`${hand.player.name}, do you want to: hit or stand `);
+        }
+      });
+
+
       if (this.currentPlayer === this.round.length - 1)
         this.currentState = 'dealer';
       else
         this.currentPlayer++;
-
+      
       //do blah
+      // TODO :insert logics that
+      // deals with one player at a time. prompting with actions available based on hand
+      // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+      //console.log(this.currentPlayer);
       break;
 
     case 'dealer':
       var houseCount = this.round[this.round.length - 1].count;
       
       if (houseCount > 17){
-        this.hit(dealer.userID);
+        this.hit(this.round[currentPlayerIndex].hand.dealer);
       }
       else if ((houseCount >= 17)&& (houseCount <= 21)){
-        this.stand(dealer.userID);
+        this.stand(this.round[currentPlayerIndex].hand.dealer);
       }
       else if (houseCount > 21){
-        dealer.hand.status = 'bust';
+        this.round.hand.dealer.status = 'bust';
       }
       this.currentState = 'payout';
       break;
@@ -210,109 +224,6 @@ class Dealer {
             //otherwise player loses, do nothing
           }
         });
-      case 'start':
-        this.round = [];
-        if (this.players.length === 0) throw new Error('No players in the game');
-        this.players.forEach(player => {
-          this.round.push(new Hand(player));
-        });
-        var dealerRound = new Hand('dealer'); //{ player: this.dealer, hand: new Hand(this.shoe.getOneCard()) };
-        this.round.push(dealerRound);
-        //console.log('ROUND HANDS ==============',this.round);
-        this.currentState = 'bets';
-        this.currentPlayerIndex = 0;
-        break;
-      case 'bets':
-        //places one bet at a time given the amount the bot/driver sent in?
-        // TODO: determine whether we want the driver to call bet directly or just always call next
-        // if the driver will always call next, then we don't need to pass in user ID to all of 
-        // the functions such as hit, stand... etc as we will keep track of them using currentPlayerIndex
-        // alternatively, we can just have next be something that the bot calls to find out what to 
-        // do next, for example, prompt users to bet and listen for bets from users
-
-        //for now, i'm assuming the driver will just call next with the amount of the bet, but we would
-        // also need to add a "verb" for the driver to send (for example: next("hit"), or next("bet", 25)
-        this.bet(amountToBet);
-        break;
-      case 'deal':
-        //deals cards to everyone
-        this.deal();
-
-        //the dealer has black jack! Skip straight to payouts. 
-        if (this.round[this.round.length - 1].count === 21) {
-          this.round[this.round.length - 1].status = 'blackjack';
-          this.currentState = 'payouts'
-        }
-        //otherwise, continue on to player round
-        else {
-          this.currentState = 'player';
-        }
-        break;
-      case 'player':
-        // TODO :insert logics that
-        // deals with one player at a time. prompting with actions available based on hand
-        // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
-        //console.log(this.currentPlayerIndex);
-        //once this player busts or stands 
-        if (this.currentPlayerIndex === this.round.length - 1)
-          this.currentState = 'dealer';
-        else
-          this.currentPlayerIndex++;
-
-        //do blah
-        break;
-      case 'dealer':
-        //do
-        // if dealer hand count >= 17 perform hit action
-        // if dealer hand = 17 && > 21 stand
-        // if dealer hand > 21 status.bust
-        this.currentState = 'payout';
-        break;
-      case 'payout':
-        var dealerCount = this.round[this.round.length - 1].count; //get the count of the dealer's hand first. 
-
-        this.round.forEach(hand => {
-          if (hand.player !== 'dealer') {
-            if (dealerCount > 21) {
-              //the dealer busted. pay out all players who did not bust.
-              if (hand.count < 21) {
-                //payout 1x for people who got 20 or less points
-                hand.player.bank += hand.bet * 2;
-              } else if (hand.count === 21) {
-                //payout 1.5x for people who got 21
-                hand.player.bank += hand.bet * 2.5;
-              }
-            } else if (dealerCount === 21) {
-              //the dealer has blackjack, "push" any players who also have blackjack, and everyone else loses. 
-              if (hand.count === 21) {
-                //push (tie) for people who got 21, just give them back their bet
-                hand.player.bank += hand.bet;
-              }
-            } else {
-              //the dealer has a number < 21
-              if (hand.count === 21) {
-                //payout 1.5x for people who got 21
-                hand.player.bank += hand.bet * 2.5;
-              } else if (hand.count > dealerCount) {
-                //player wins 
-                hand.player.bank += hand.bet * 2;
-              } else if (hand.count === dealerCount) {
-                //push, player gets their bet back
-                hand.player.bank += hand.bet;
-              }
-              //otherwise player loses, do nothing
-            }
-          }
-        });
-        //TODO: Save all users to db. 
-
-        // [x] if dealer.status = bust pay out all !bust status players
-        // [x] if player.status = blackjack || hand.value 21 payout playerbet + 1.5 * player.bet to player.bank
-        // [x] if dealer status = !bust && < player.hand.value payout player.bet+player.bet to player.bank and reset bet to 0
-        // [x] if dealer status = !bust && > player.hand.value no payout reset bet to 0
-        // [x] if dealer status = !bust && === player.hand.value no payout retain bet on table "this is called a push in BJ" 
-        //     the easier way to do this is to just give them back their bet money so that is what i did instead
-        // [x] iterate over player hand counts vs dealer hand count
 
       }
       //TODO: Save all users to db. 
@@ -329,19 +240,25 @@ class Dealer {
       break;
     }
     /* TODO: 
-      - [x] figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
-      - [ ] implement stand
-      - [x] implement bet
-      - [ ] implement hit
-      - [ ] how much money does a player start off with?
-      - [ ] save that info to the db in the player object
-      - [ ] command line or discord bot "driver" that drives the game. 
-      - [ ] return the current state to the driver from next()
-      - [x] dealer logic for hitting or standing. 
-      - [x] create a mongo schema for users
-      - [x] add the API routes
+      - figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
+      - implement stand, bet, hit
+      - how much money does a player start off with?
+      - save that info to the db in the player object
+      - command line or discord bot "driver" that drives the game. 
+      - return the current state to the driver from next()
+      - dealer logic for hitting or standing. 
+      - create a mongo schema for users
+      - add the API routes
       */
   }
+}
+
+var dealer = new Dealer();
+dealer.addPlayer('dina');
+dealer.addPlayer('owais');
+console.log('PLAYERS: ', dealer.players);
+for (let i = 0; i < 100; i++) {
+  dealer.next();
 }
 
 module.exports = Dealer;
