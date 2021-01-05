@@ -5,7 +5,7 @@ class Card {
     this.rank = rank;
     this.suit = suit;
     //this.image = image;
-    this.value;
+    this.value = 0;
   }
 }
 
