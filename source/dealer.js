@@ -62,9 +62,12 @@ class Dealer {
     if (this.currentPlayerIndex === this.round.length - 1) {
       this.currentPlayerIndex = 0;
     }
-    else
+    else {
       this.currentPlayerIndex++;
+    }
   }
+
+  
 
   bet(amount) {
     //find the hand associated with the current player by the index we are keepign track of
