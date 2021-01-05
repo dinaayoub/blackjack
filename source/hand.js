@@ -6,7 +6,7 @@ class Hand{
     this.player = player;
     this.bet = 0;
     this.status = 'active';//can be active, blackjack, bust, or stand
-    this.count;
+    this.count = 0;
   }
 
   addCard(card){
