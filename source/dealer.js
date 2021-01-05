@@ -156,13 +156,16 @@ class Dealer {
     this.round.forEach(hand => {
       // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
       if(hand.count > 21){
+        // this.hand.status = 'bust';
         this.round[this.currentPlayerIndex].status = 'bust';
         this.currentPlayerIndex++;
       } else if (hand.count === 21){
+        this.hand.status = 'blackjack';
         this.currentPlayerIndex++;
       } else if (this.player.hit){
         this.hit();
       } else if (this.player.stand){
+        this.hand.status = 'stand';
         this.stand();
       }
     });
