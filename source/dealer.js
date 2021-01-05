@@ -121,7 +121,7 @@ class Dealer {
       break;
 
     case 'dealer':
-      var houseCount = dealer.hand.count;
+      var houseCount = this.round[this.round.length - 1].count;
       
       if (houseCount > 17){
         this.hit(dealer.userID);
