@@ -169,28 +169,28 @@ class Dealer {
             //the dealer busted. pay out all players who did not bust.
             if (hand.count < 21) {
               //payout 1x for people who got 20 or less points
-              hand.player.bank += hand.bet * 2;
+              hand.player.earnings += hand.bet * 2;
             } else if (hand.count === 21) {
               //payout 1.5x for people who got 21
-              hand.player.bank += hand.bet * 2.5;
+              hand.player.earnings += hand.bet * 2.5;
             }
           } else if (dealerCount === 21) {
             //the dealer has blackjack, "push" any players who also have blackjack, and everyone else loses. 
             if (hand.count === 21) {
               //push (tie) for people who got 21, just give them back their bet
-              hand.player.bank += hand.bet;
+              hand.player.earnings += hand.bet;
             }
           } else {
             //the dealer has a number < 21
             if (hand.count === 21) {
               //payout 1.5x for people who got 21
-              hand.player.bank += hand.bet * 2.5;
+              hand.player.earnings += hand.bet * 2.5;
             } else if (hand.count > dealerCount) {
               //player wins 
-              hand.player.bank += hand.bet * 2;
+              hand.player.earnings += hand.bet * 2;
             } else if (hand.count === dealerCount) {
               //push, player gets their bet back
-              hand.player.bank += hand.bet;
+              hand.player.earnings += hand.bet;
             }
             //otherwise player loses, do nothing
           }
@@ -213,7 +213,7 @@ class Dealer {
       - [x] figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
       - [ ] implement stand
       - [x] implement bet
-      - [ ] implement hit
+      - [x] implement hit
       - [ ] how much money does a player start off with?
       - [ ] save that info to the db in the player object
       - [ ] command line or discord bot "driver" that drives the game. 
