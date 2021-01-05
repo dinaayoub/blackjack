@@ -2,7 +2,7 @@
 
 const express = require('express');
 const Users = require('../schema/user.schema');
-// const Discord = require('discord.js');
+// const Discord = require('discord.js')
 // const client = new Discord.Client();
 // const user = client.user.id;
 
