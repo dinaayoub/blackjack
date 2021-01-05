@@ -3,10 +3,11 @@
 const express = require('express');
 const router = express.Router();
 
-const dealer = require('../dealer');
+const Dealer = require('../dealer');
+const dealer = new Dealer();
 
 router.get('/deal', dealHandler);
-router.get('/hit', hitHandler);
+router.get('/hit/:id', hitHandler);
 router.get('/stand', standHandler);
 router.get('/next', nextHandler);
 
@@ -20,7 +21,8 @@ function dealHandler(req, res){
 function hitHandler(req, res){
   //get
   // this will give the player one card
-  let id = req.body.userID;
+  console.log(req.params.id);
+  let id = req.params.id;
   let hit = dealer.hit(id);
   res.status(200).json(hit);
 }
@@ -38,6 +40,10 @@ function nextHandler(req, res){
   // get (currently)
   // awaiting additional information from the dealer.js page
 //   let obj = req.body;
+  console.log('inside the next function');
+  console.log(dealer);
   let next = dealer.next();
-  res.status(200).json(next);
+  res.status(200).send(next);
 }
+
+module.exports = router;
