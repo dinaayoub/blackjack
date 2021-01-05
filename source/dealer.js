@@ -52,18 +52,18 @@ class Dealer {
     this.players.delete(playerIndex);
   }
 
-  hit(currentPlayerIndex) {
+  hit() {
     //hit the given user with one more card from the shoe. 
-    this.round[currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
+    this.round[this.currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
   }
 
-  stand(userID) {
+  stand() {
     //the user does not want any other cards, and returns simply the hand.
-    this.round.forEach(hand => {
-      if (hand.player.id == userID) {
-        return hand;
-      }
-    });
+    if (this.currentPlayerIndex === this.round.length - 1) {
+      this.currentPlayerIndex = 0;
+    }
+    else
+      this.currentPlayerIndex++;
   }
 
   bet(amount) {
@@ -160,7 +160,20 @@ class Dealer {
       this.currentState = 'dealer';
     else
       this.currentPlayerIndex++;
+  }
 
+  dealer() {
+    var houseCount = this.round[this.round.length - 1].count;
+    while (houseCount < 17) {
+      this.hit(this.currentPlayerIndex);
+    }
+    if (houseCount <= 21) {
+      this.stand(this.currentPlayerIndex);
+    }
+    else if (houseCount > 21) {
+      this.round[currentPlayerIndex].status = 'bust';
+    }
+    this.currentState = 'payout';
   }
 
   next(verb, amountToBet) {
@@ -187,11 +200,7 @@ class Dealer {
         this.player(verb);
         break;
       case 'dealer':
-        //do
-        // if dealer hand count >= 17 perform hit action
-        // if dealer hand = 17 && > 21 stand
-        // if dealer hand > 21 status.bust
-        this.currentState = 'payout';
+        this.dealer();
         break;
       case 'payout':
         this.payout();
