@@ -32,7 +32,7 @@ class Dealer {
     //if the dealer has black jack! Skip straight to payouts. 
     if (this.round[this.round.length - 1].count === 21) {
       this.round[this.round.length - 1].status = 'blackjack';
-      this.currentState = 'payouts'
+      this.currentState = 'payouts';
     }
     //otherwise, continue on to player round
     else {
@@ -54,12 +54,7 @@ class Dealer {
 
   hit() {
     //hit the given user with one more card from the shoe. 
-    if(this.round[this.currentPlayerIndex].hand >= 21){
-      this.currentState = 'player';
-    } else {
-      this.round[this.currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
-      this.currentState = 'player';
-    }
+    this.round[this.currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
   }
 
   stand() {
@@ -161,6 +156,7 @@ class Dealer {
     this.round.forEach(hand => {
       // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
       if(hand.count > 21){
+        this.round[this.currentPlayerIndex].status = 'bust';
         this.currentPlayerIndex++;
       } else if (hand.count === 21){
         this.currentPlayerIndex++;
@@ -176,7 +172,20 @@ class Dealer {
       this.currentState = 'dealer';
     else
       this.currentPlayerIndex++;
+  }
 
+  dealer() {
+    var houseCount = this.round[this.round.length - 1].count;
+    while (houseCount < 17) {
+      this.hit(this.currentPlayerIndex);
+    }
+    if (houseCount <= 21) {
+      this.stand(this.currentPlayerIndex);
+    }
+    else if (houseCount > 21) {
+      this.round[this.currentPlayerIndex].status = 'bust';
+    }
+    this.currentState = 'payout';
   }
 
   next(verb, amountToBet) {
@@ -203,11 +212,7 @@ class Dealer {
       this.player(verb);
       break;
     case 'dealer':
-      //do
-      // if dealer hand count >= 17 perform hit action
-      // if dealer hand = 17 && > 21 stand
-      // if dealer hand > 21 status.bust
-      this.currentState = 'payout';
+      this.dealer();
       break;
     case 'payout':
       this.payout();
