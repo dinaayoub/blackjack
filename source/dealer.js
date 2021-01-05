@@ -156,10 +156,17 @@ class Dealer {
       //do blah
       break;
     case 'dealer':
-      //do
-      // if dealer hand count >= 17 perform hit action
-      // if dealer hand = 17 && > 21 stand
-      // if dealer hand > 21 status.bust
+      var houseCount = this.round[this.round.length - 1].count;
+      
+      if (houseCount > 17){
+        this.hit(this.round[currentPlayerIndex].hand.dealer);
+      }
+      else if ((houseCount >= 17)&& (houseCount <= 21)){
+        this.stand(this.round[currentPlayerIndex].hand.dealer);
+      }
+      else if (houseCount > 21){
+        this.round[currentPlayerIndex].hand.dealer.status = 'bust';
+      }
       this.currentState = 'payout';
       break;
     case 'payout':
