@@ -36,6 +36,7 @@ describe('Hand Object', () => {
   it('Can add multiple cards to a hand', () => {
     hand.addCard(card2);
     hand.addCard(card3);
+    console.log(hand);
     expect(hand).toEqual({
       cards: [card, card2, card3],
       player: player,

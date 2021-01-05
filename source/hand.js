@@ -11,7 +11,7 @@ class Hand {
 
   addCard(card) {
     this.cards.push(card);
-    this.totalHandCount();
+    //this.totalHandCount();
   }
 
   totalHandCount() {
@@ -19,7 +19,7 @@ class Hand {
     for (let i = 0; i < this.cards.length; i++) {
       if (this.cards[i].rank === 'A') {
         var aceCard = this.cards.splice(i, 1);
-        this.cards.push(aceCard);
+        this.cards.push(aceCard[0]);
         i--;
       }
     }
