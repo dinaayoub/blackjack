@@ -71,13 +71,13 @@ class Dealer {
     this.round[this.currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
   }
 
-  stand(userID) {
+  stand() {
     //the user does not want any other cards, and returns simply the hand.
-    this.round.forEach(hand => {
-      if (hand.player.id == userID) {
-        return hand;
-      }
-    });
+    if (this.currentPlayerIndex === this.round.length - 1) {
+      this.currentPlayerIndex = 0;
+    }
+    else
+      this.currentPlayerIndex++;
   }
 
   bet(amount) {
@@ -179,17 +179,45 @@ class Dealer {
     this.currentPlayerIndex = 0;
   }
 
-  player(verb) {
+  player() {
     // TODO :insert logics that
     // deals with one player at a time. prompting with actions available based on hand
-    // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+    this.round.forEach(hand => {
+      // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+      if(hand.count > 21){
+        // this.hand.status = 'bust';
+        this.round[this.currentPlayerIndex].status = 'bust';
+        this.currentPlayerIndex++;
+      } else if (hand.count === 21){
+        this.hand.status = 'blackjack';
+        this.currentPlayerIndex++;
+      } else if (this.player.hit){
+        this.hit();
+      } else if (this.player.stand){
+        this.hand.status = 'stand';
+        this.stand();
+      }
+    });
 
     //once this player busts or stands, update current index 
     if (this.currentPlayerIndex === this.round.length - 1)
       this.currentState = 'dealer';
     else
       this.currentPlayerIndex++;
+  }
 
+  dealer() {
+    var houseCount = this.round[this.round.length - 1].count;
+    while (houseCount < 17) {
+      this.hit(this.currentPlayerIndex);
+    }
+    if (houseCount <= 21) {
+      this.stand(this.currentPlayerIndex);
+    }
+    else if (houseCount > 21) {
+      this.round[this.currentPlayerIndex].status = 'bust';
+    }
+    this.currentState = 'payout';
   }
 
   next(verb, amountToBet) {
@@ -216,11 +244,7 @@ class Dealer {
       this.player(verb);
       break;
     case 'dealer':
-      //do
-      // if dealer hand count >= 17 perform hit action
-      // if dealer hand = 17 && > 21 stand
-      // if dealer hand > 21 status.bust
-      this.currentState = 'payout';
+      this.dealer();
       break;
     case 'payout':
       this.payout();
@@ -229,7 +253,7 @@ class Dealer {
     return (this.currentState);
     /* TODO: 
       - [x] figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
-      - [ ] implement stand
+      - [x] implement stand
       - [x] implement bet
       - [x] implement hit
       - [ ] how much money does a player start off with?
