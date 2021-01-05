@@ -71,21 +71,17 @@ class Dealer {
     //find the hand associated with the current player by the index we are keepign track of
     var currentPlayerHand = this.round[this.currentPlayerIndex];
 
-    if (currentPlayerHand) {
-      //check if the player's bank has enough money
-      if (currentPlayerHand.player.bank >= amount) {
-        //add the bet to the player's hand
-        currentPlayerHand.bet = amount;
-        //remove the amount from the player's bank
-        currentPlayerHand.player.bank -= amount;
-      }
-      else {
-        //the player doesn't have enough money. ask them to buy in somehow?
-        return new Error(`Player ${userID} does not have enough money in the bank to buy in.`);
-      }
-    } else {
-      //we couldn't find that player ID, what do we do? throw an error, or just ignore this and return null/error?
-      return new Error('Invalid player');
+    //check if the player's bank has enough money
+    if (currentPlayerHand.player.bank >= amount) {
+      //add the bet to the player's hand
+      currentPlayerHand.bet = amount;
+      //remove the amount from the player's bank
+      currentPlayerHand.player.bank -= amount;
+      //need to update database
+    }
+    else {
+      //the player doesn't have enough money. ask them to buy in somehow?
+      return new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
     }
 
     //if next player is not the dealer, move on to the next player.
