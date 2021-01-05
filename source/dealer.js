@@ -3,8 +3,8 @@
 const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require('./hand');
-const express = require('express');
-var numberOfDecks = 1; //this should be changeable
+
+var numberOfDecks = 6; //this should be changeable
 var maxPlayers = 7;
 
 class Dealer {
@@ -17,7 +17,6 @@ class Dealer {
     this.players = [];
     this.round = [];
   }
-
 
   deal() {
     //deal a new hand
@@ -58,14 +57,43 @@ class Dealer {
     this.round[currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
   }
 
-
   stand(userID) {
     //the user does not want any other cards, and returns simply the hand.
     this.round.forEach(hand => {
-      if(hand.player.id == userID){
+      if (hand.player.id == userID) {
         return hand;
       }
     });
+  }
+
+  bet(amount) {
+    //find the hand associated with the current player by the index we are keepign track of
+    var currentPlayerHand = this.round[this.currentPlayerIndex];
+
+    //check if the player's bank has enough money
+    if (currentPlayerHand.player.bank >= amount) {
+      //add the bet to the player's hand
+      currentPlayerHand.bet = amount;
+      //remove the amount from the player's bank
+      currentPlayerHand.player.bank -= amount;
+      //need to update database
+    }
+    else {
+      //the player doesn't have enough money. ask them to buy in somehow?
+      return new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
+    }
+
+    //if next player is not the dealer, move on to the next player.
+    if (this.currentPlayerIndex < this.round.length - 2) {
+      this.currentPlayerIndex++;
+    }
+    //if the next player is the dealer, reset player index to 0 and change current state to 'deal' as betting is done for all players.
+    else if (this.currentPlayerIndex === this.round.length - 2) {
+      //next player is the dealer who doesn't bet, so move on to next()
+      this.currentPlayerIndex = 0;
+      this.currentState = 'deal';
+    }
+    //return currentPlayersHand;
   }
 
   payout() {
@@ -134,8 +162,9 @@ class Dealer {
       this.currentPlayerIndex++;
 
   }
+
   next(verb, amountToBet) {
-    //this will do whatever is next in the queue of operations based on current state
+    //this will do whatever is next in the queue of operations based on current state and current player
     console.log('CURRENT STATE = ', this.currentState);
     //sequence of events: https://bicyclecards.com/how-to-play/blackjack/
     //start of a round - copying the list of current players into this.round, adding the dealer to the round, updating the state to bets
@@ -145,28 +174,28 @@ class Dealer {
     //dealer action - hit or stand based on the rules. updates the state to payouts. 
     //payouts end of round. 
     switch (this.currentState) {
-    case 'start':
-      this.start();
-      break;
-    case 'bets': //places one bet at a time given the amount the bot/driver sent in
-      this.bet(amountToBet);
-      break;
-    case 'deal': //deals cards to everyone
-      this.deal();
-      break;
-    case 'player':
-      this.player(verb);
-      break;
-    case 'dealer':
-      //do
-      // if dealer hand count >= 17 perform hit action
-      // if dealer hand = 17 && > 21 stand
-      // if dealer hand > 21 status.bust
-      this.currentState = 'payout';
-      break;
-    case 'payout':
-      this.payout();
-      break;
+      case 'start':
+        this.start();
+        break;
+      case 'bets': //places one bet at a time given the amount the bot/driver sent in
+        this.bet(amountToBet);
+        break;
+      case 'deal': //deals cards to everyone
+        this.deal();
+        break;
+      case 'player':
+        this.player(verb);
+        break;
+      case 'dealer':
+        //do
+        // if dealer hand count >= 17 perform hit action
+        // if dealer hand = 17 && > 21 stand
+        // if dealer hand > 21 status.bust
+        this.currentState = 'payout';
+        break;
+      case 'payout':
+        this.payout();
+        break;
     }
     return (this.currentState);
     /* TODO: 
