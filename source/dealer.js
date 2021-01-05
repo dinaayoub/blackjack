@@ -81,7 +81,6 @@ class Dealer {
       return new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
     }
 
-
     //if next player is not the dealer, move on to the next player.
     if (this.currentPlayerIndex < this.round.length - 2) {
       this.currentPlayerIndex++;
