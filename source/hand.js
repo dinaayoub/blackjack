@@ -12,6 +12,7 @@ class Hand{
   addCard(card){
     this.cards.push(card);
   }
+
   
   totalHandCount(){
     for(let i = 0; i < this.cards.length; i++)

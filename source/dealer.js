@@ -51,8 +51,11 @@ class Dealer {
 
   hit(userID) {
     //hit the given user with one more card from the shoe. 
-    this.shoe.getOneCard();
-    // add new card to player hand
+    this.round.forEach(hand => {
+      if(hand.player.id == userID) {
+        hand.addCard(this.shoe.getOneCard());
+      }
+    });
   }
 
 
