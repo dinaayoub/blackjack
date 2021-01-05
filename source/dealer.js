@@ -18,6 +18,7 @@ class Dealer {
     this.round = [];
   }
 
+
   deal() {
     //deal a new hand
     //for each player, deal the first card. 
@@ -52,9 +53,9 @@ class Dealer {
     this.players.delete(playerIndex);
   }
 
-  hit() {
-    //hit the current user with one more card from the shoe. 
-    this.round[this.currentPlayerIndex].addCard(this.shoe.getOneCard());
+  hit(currentPlayerIndex) {
+    //hit the given user with one more card from the shoe. 
+    this.round[currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
   }
 
 
