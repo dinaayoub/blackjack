@@ -1,7 +1,7 @@
 'use strict';
 
-class Hand{
-  constructor(player){
+class Hand {
+  constructor(player) {
     this.cards = [];
     this.player = player;
     this.bet = 0;
@@ -9,37 +9,40 @@ class Hand{
     this.count;
   }
 
-  addCard(card){
+  addCard(card) {
     this.cards.push(card);
+    //this.totalHandCount();
   }
 
-  
-  totalHandCount(){
-    for(let i = 0; i < this.cards.length; i++)
-      if (this.cards[i].rank === 'A'){
-        this.cards[i].delete();
-        this.cards[i].push();
+  totalHandCount() {
+    console.log(this.cards);
+    for (let i = 0; i < this.cards.length; i++) {
+      if (this.cards[i].rank === 'A') {
+        var aceCard = this.cards.splice(i, 1);
+        this.cards.push(aceCard[0]);
         i--;
       }
-    this.cards.forEach(card =>{
-      if (card.rank === Number) {
-        card.value = card.rank;
+    }
+    console.log(this.cards);
+    this.cards.forEach(card => {
+      console.log(card);
+      if (typeof (parseInt(card.rank)) == 'Number') {
+        card.value = parseInt(card.rank);
         this.count += card.value;
       }
-      if ((card.rank ==='J')||(card.rank ==='Q')||(card.rank ==='K')){
+      if ((card.rank === 'J') || (card.rank === 'Q') || (card.rank === 'K')) {
         card.value = 10;
         this.count += card.value;
-
       }
-      if ((card.rank === 'A') && (this.count < 11)){
+      if ((card.rank === 'A') && (this.count < 11)) {
         card.value = 11;
         this.count += card.value;
       }
-      if ((card.rank === 'A') && (this.count >= 11)){
+      if ((card.rank === 'A') && (this.count >= 11)) {
         card.value = 1;
         this.count += card.value;
       }
-      return  this.count;
+      return this.count;
     });
   }
 }
