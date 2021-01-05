@@ -51,13 +51,9 @@ class Dealer {
     this.players.delete(playerIndex);
   }
 
-  hit(userID) {
+  hit(currentPlayerIndex) {
     //hit the given user with one more card from the shoe. 
-    this.round.forEach(hand => {
-      if (hand.player.id == userID) {
-        hand.addCard(this.shoe.getOneCard());
-      }
-    });
+    this.round[currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
   }
 
 
