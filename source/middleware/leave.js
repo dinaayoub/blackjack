@@ -5,7 +5,7 @@ const Users = require('../schema/user.schema');
 
 
 // essentially update 
-async function leaveGameHandler(req, res) {
+async function updatePlayer(req, res) {
   // will need to be updated per discord.js logic 
   let name = req.body.name; 
   let bank = req.body.bank + req.body.earnings;
@@ -13,4 +13,4 @@ async function leaveGameHandler(req, res) {
   Users.findAndUpdate({userID: { $eq: userID}}, {name, bank});
 }
 
-module.exports = leaveGameHandler;
+module.exports = updatePlayer;

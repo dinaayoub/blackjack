@@ -8,7 +8,7 @@ const Users = require('../schema/user.schema');
 
 
 // get an existing player record 
-async function joinGameHandler(req, res) {
+async function getPlayer(req, res) {
   let userID = req.params.userID; // this will need to be translated to discord.js friendly lingo
   let record;
   // checks if user already exists in db 
@@ -27,4 +27,4 @@ async function addNewPlayer(req, res) {
   return newRecord.save();
 }
 
-module.exports = joinGameHandler;
+module.exports = getPlayer;

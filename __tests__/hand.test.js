@@ -10,7 +10,7 @@ describe('Hand Object', () => {
   player.bank = 350;
   var hand = new Hand(player);
   var card = new Card('10', 'S');
-  var card2 = new Card('A', 'C')
+  var card2 = new Card('A', 'C');
   var card3 = new Card('5', 'H');
   var card4 = new Card('6', 'D');
 
@@ -20,7 +20,7 @@ describe('Hand Object', () => {
       player: player,
       bet: 0,
       status: 'active'
-    })
+    });
   });
 
   it('Can add a card to a hand', () => {
@@ -30,7 +30,7 @@ describe('Hand Object', () => {
       player: player,
       bet: 0,
       status: 'active'
-    })
+    });
   });
 
   it('Can add multiple cards to a hand', () => {
@@ -50,5 +50,5 @@ describe('Hand Object', () => {
     // var count = hand.totalHandCount();
     // hand.count = count;
     // expect(hand.count).toEqual(21);
-  })
+  });
 });
