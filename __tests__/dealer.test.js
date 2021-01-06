@@ -1,5 +1,11 @@
 'use strict';
 const mongoose = require('mongoose');
+const options = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+};
 const Dealer = require('../source/dealer');
 const updatePlayer = require('../source/middleware/update');
 
@@ -8,12 +14,8 @@ describe('Dealer Object', () => {
   var mockUpdate;
 
   beforeAll(async (done) => {
-    mockUpdate = jest.fn().mockImplementation(updatePlayer);
-    await mongoose.connect(global.__MONGO_URI__, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    }, (err) => {
+    // mockUpdate = jest.fn().mockImplementation(updatePlayer);
+    await mongoose.connect(global.__MONGO_URI__, options, (err) => {
       if (err) {
         console.error(err);
         process.exit(1);
@@ -24,7 +26,7 @@ describe('Dealer Object', () => {
 
   afterAll((done) => {
     mongoose.connection.close();
-    mockUpdate.mockRestore();
+    // mockUpdate.mockRestore();
     done();
   });
 
@@ -64,11 +66,12 @@ describe('Dealer Object', () => {
   });
 
   it('Can remove a player from the game for next round', async () => {
-    console.log('PLAYERS === ', dealer.players);
-    dealer.removePlayer('1');
+    dealer.players[0].bank = 300;
+    await dealer.removePlayer('1');
     expect(dealer.players.length).toBe(1);
+    await dealer.addPlayer('1');
+    expect(dealer.players[1].bank).toBe(300);
     //need to validate that the player is updated correctly in the db?
   });
-
 
 });
