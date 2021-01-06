@@ -3,7 +3,7 @@
 const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require('./hand');
-const express = require('express');
+
 // db functions 
 const updatePlayer = require('./middleware/update');
 const getPlayer = require('./middleware/join');
@@ -41,6 +41,9 @@ class Dealer {
   }
 
   bet(amount) {
+    //check that the amount is >min and <max
+    if (amount < this.minBet || amount > this.maxBet) throw new Error(`Invalid amount. Please bet something between ${this.minBet} and ${this.maxBet}`)
+
     //find the hand associated with the current player by the index we are keepign track of
     var currentPlayerHand = this.round[this.currentPlayerIndex];
 
@@ -50,11 +53,11 @@ class Dealer {
       currentPlayerHand.bet = amount;
       //remove the amount from the player's bank
       currentPlayerHand.player.bank -= amount;
-      //need to update database
+      //TODO: need to update database
     }
     else {
       //the player doesn't have enough money. ask them to buy in somehow?
-      return new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
+      throw new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
     }
 
     //if next player is not the dealer, move on to the next player.
@@ -92,19 +95,22 @@ class Dealer {
     }
   }
 
-  addPlayer(userID) {
+  async addPlayer(userID) {
     //instead of returning table is full, maybe spin up a new table in a different discord channel? 
     if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
 
     // this logic might need to be changed 
     // upon changes to new Player instantiation 
     let newPlayer = new Player(userID);
-    let playerRecord = getPlayer(newPlayer);
+    // console.log(newPlayer);
+    let playerRecord = await getPlayer(newPlayer);
+    // console.log(playerRecord);
     newPlayer.name = playerRecord.name;
     newPlayer.bank = playerRecord.bank;
     newPlayer.currentLosses = playerRecord.losses;
     newPlayer.currentWins = playerRecord.wins;
     newPlayer.currentPushes = playerRecord.pushes;
+    // console.log(newPlayer);
     this.players.push(newPlayer);
   }
 
@@ -112,6 +118,7 @@ class Dealer {
     var playerIndex = this.players.indexOf({ id: userID });
     if (playerIndex < 0) throw new Error('This player is not in the game');
     this.players.delete(playerIndex);
+    //need to update them in the db?
   }
 
   hit() {
@@ -173,9 +180,6 @@ class Dealer {
           }
           //otherwise player loses, do nothing
         }
-        // TODO: save all users to db
-        // [x] may need to update leave.js arguments since it expects to take from req.body
-
         // update what the player bank is after earnings
         hand.player.bank += hand.player.earnings;
         updatePlayer(hand.player);
