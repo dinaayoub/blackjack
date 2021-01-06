@@ -13,7 +13,7 @@ describe('Dealer Object', () => {
 
   it('Can correctly throw an error if we try to start a game without any players', () => {
     expect(() => {
-      dealer.start()
+      dealer.start();
     }).toThrow();
   });
 

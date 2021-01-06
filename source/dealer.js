@@ -32,8 +32,9 @@ class Dealer {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
     this.players.forEach(player => {
+      console.log('player in start posistion', this.players);
       if(player.bank < minBet){
-        this.buyIn(player.id)
+        this.buyIn(player);
         this.round.push(new Hand(player));
       }
       this.round.push(new Hand(player));
@@ -131,10 +132,10 @@ class Dealer {
     else
       this.currentPlayerIndex++;
   }
-  buyIn(userID){
-    var playerIndex = this.players.indexOf({ id: userID });
+  buyIn(player){
+    console.log('low player', player);
     console.log(`bank too low, reseting bank`);
-    playerIndex.bank = 500;
+    player.bank = 500;
   }
 
   payout() {
@@ -153,7 +154,13 @@ class Dealer {
             hand.player.earnings += hand.bet * 2.5;
             hand.player.currentWins += 1;
           } else {
-            this.player.buyInhand.player.earnings += hand.bet;
+            hand.player.currentLosses += 1;
+          }
+        } else if (dealerCount === 21) {
+          //the dealer has blackjack, "push" any players who also have blackjack, and everyone else loses. 
+          if (hand.count === 21) {
+            //push (tie) for people who got 21, just give them back their bet
+            hand.player.earnings += hand.bet;
             hand.player.currentPushes += 1;
           } else {
             hand.player.currentLosses += 1;
@@ -242,24 +249,24 @@ class Dealer {
     //dealer action - hit or stand based on the rules. updates the state to payouts. 
     //payouts end of round. 
     switch (this.currentState) {
-      case 'start':
-        this.start();
-        break;
-      case 'bets': //places one bet at a time given the amount the bot/driver sent in
-        this.bet(amountToBet);
-        break;
-      case 'deal': //deals cards to everyone
-        this.deal();
-        break;
-      case 'player':
-        this.player(verb);
-        break;
-      case 'dealer':
-        this.dealer();
-        break;
-      case 'payout':
-        this.payout();
-        break;
+    case 'start':
+      this.start();
+      break;
+    case 'bets': //places one bet at a time given the amount the bot/driver sent in
+      this.bet(amountToBet);
+      break;
+    case 'deal': //deals cards to everyone
+      this.deal();
+      break;
+    case 'player':
+      this.player(verb);
+      break;
+    case 'dealer':
+      this.dealer();
+      break;
+    case 'payout':
+      this.payout();
+      break;
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
     /* TODO: 

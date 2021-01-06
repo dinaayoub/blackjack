@@ -52,8 +52,8 @@ describe('Handcount Object', () => {
   player.bank = 350;
   var hand = new Hand(player);
   var card = new Card('K', 'S');
-  var card2 = new Card('A', 'C');
-  var card3 = new Card('7', 'H');
+  var card2 = new Card('7', 'C');
+  var card3 = new Card('A', 'H');
 
 
   it('Can get the count of a hand with a face', () => {
@@ -66,7 +66,7 @@ describe('Handcount Object', () => {
     hand.addCard(card2);
     var count = hand.totalHandCount();
     hand.count = count;
-    expect(hand.count).toEqual(21);
+    expect(hand.count).toEqual(17);
   });
   it('Can get the count of a hand with a face and ace and number', () => {
     hand.addCard(card3);
