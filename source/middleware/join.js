@@ -26,7 +26,7 @@ async function getPlayer(player) {
 async function addNewPlayer(player) {
   // a new player is saved only with their userID and name
   let newRecord = new Users({userID: player.id, name: player.name});
-  return newRecord.save();
+  return await newRecord.save();
 }
 
 module.exports = getPlayer;
