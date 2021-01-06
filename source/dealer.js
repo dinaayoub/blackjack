@@ -31,11 +31,11 @@ class Dealer {
   start() {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
-    this.players.forEach(player => {
-      console.log('player in start posistion', this.players);
+    this.players.forEach (async (player) => {
+      console.log('player in start posistion', player);
       if(player.bank < minBet){
-        this.buyIn(player);
-        this.round.push(new Hand(player));
+        console.log('buyin log');
+        await this.buyIn(player);
       }
       this.round.push(new Hand(player));
     });

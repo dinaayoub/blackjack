@@ -12,14 +12,13 @@ describe('Hand Object', () => {
   var card = new Card('9', 'S');
   var card2 = new Card('A', 'C');
   var card3 = new Card('5', 'H');
-  var card4 = new Card('K', 'D');
 
   it('Can create a new hand object', () => {
     expect(hand).toEqual({
       cards: [],
       player: player,
       bet: 0,
-      status: 'active'
+      status: 'active',
     });
   });
 
@@ -31,7 +30,7 @@ describe('Hand Object', () => {
       player: player,
       bet: 0,
       status: 'active',
-      count: 9
+      count: 9,
     });
   });
 
@@ -43,7 +42,7 @@ describe('Hand Object', () => {
       player: player,
       bet: 0,
       status: 'active',
-      count: 15
+      count: 15,
     });
   });
 });
