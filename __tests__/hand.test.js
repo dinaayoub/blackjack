@@ -96,7 +96,7 @@ describe('Handcount Object doubble ace', () => {
     hand.addCard(card2);
     hand.addCard(card3);
     var count = hand.totalHandCount();
-    console.log('in test HO card1', count);
+    // console.log('in test HO card1', count);
     hand.count = count;
     expect(hand.count).toEqual(19);
   });

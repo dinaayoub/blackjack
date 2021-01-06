@@ -28,13 +28,43 @@ class Dealer {
     this.round = [];
   }
 
+  async addPlayer(userID) {
+    //instead of returning table is full, maybe spin up a new table in a different discord channel? 
+    if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
+
+    // this logic might need to be changed 
+    // upon changes to new Player instantiation 
+    let newPlayer = new Player(userID);
+    let playerRecord = await getPlayer(newPlayer);
+    newPlayer.name = playerRecord.name;
+    newPlayer.bank = playerRecord.bank;
+    newPlayer.currentLosses = playerRecord.losses;
+    newPlayer.currentWins = playerRecord.wins;
+    newPlayer.currentPushes = playerRecord.pushes;
+    this.players.push(newPlayer);
+  }
+
+  removePlayer(userID) {
+    var playerIndex = this.players.findIndex((player, index) => {
+      return player.userID === userID;
+    });
+    if (playerIndex < 0) throw new Error('This player is not in the game');
+    var player = this.players[playerIndex];
+    // update the player in the database
+    updatePlayer(player);
+    // then remove them from the queue for next hand
+    this.players.splice(playerIndex, 1);
+    // potentially remove them from current hand as well? they'd be
+    // forfeiting their bet but i think that's ok as it's how other games do it
+  }
+
   start() {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
-    this.players.forEach (async (player) => {
-      console.log('player in start posistion', player);
-      if(player.bank < minBet){
-        console.log('buyin log');
+    this.players.forEach(async (player) => {
+      // console.log('player in start posistion', player);
+      if (player.bank < minBet) {
+        // console.log('buyin log');
         await this.buyIn(player);
       }
       this.round.push(new Hand(player));
@@ -100,31 +130,7 @@ class Dealer {
     }
   }
 
-  async addPlayer(userID) {
-    //instead of returning table is full, maybe spin up a new table in a different discord channel? 
-    if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
 
-    // this logic might need to be changed 
-    // upon changes to new Player instantiation 
-    let newPlayer = new Player(userID);
-    // console.log(newPlayer);
-    let playerRecord = await getPlayer(newPlayer);
-    // console.log(playerRecord);
-    newPlayer.name = playerRecord.name;
-    newPlayer.bank = playerRecord.bank;
-    newPlayer.currentLosses = playerRecord.losses;
-    newPlayer.currentWins = playerRecord.wins;
-    newPlayer.currentPushes = playerRecord.pushes;
-    // console.log(newPlayer);
-    this.players.push(newPlayer);
-  }
-
-  removePlayer(userID) {
-    var playerIndex = this.players.indexOf({ id: userID });
-    if (playerIndex < 0) throw new Error('This player is not in the game');
-    this.players.delete(playerIndex);
-    //need to update them in the db?
-  }
 
   hit() {
     //hit the given user with one more card from the shoe. 
@@ -139,7 +145,8 @@ class Dealer {
     else
       this.currentPlayerIndex++;
   }
-  buyIn(player){
+
+  buyIn(player) {
     console.log('low player', player);
     console.log(`bank too low, reseting bank`);
     player.bank = 500;
@@ -251,24 +258,24 @@ class Dealer {
     //dealer action - hit or stand based on the rules. updates the state to payouts. 
     //payouts end of round. 
     switch (this.currentState) {
-    case 'start':
-      this.start();
-      break;
-    case 'bets': //places one bet at a time given the amount the bot/driver sent in
-      this.bet(amountToBet);
-      break;
-    case 'deal': //deals cards to everyone
-      this.deal();
-      break;
-    case 'player':
-      this.player(verb);
-      break;
-    case 'dealer':
-      this.dealer();
-      break;
-    case 'payout':
-      this.payout();
-      break;
+      case 'start':
+        this.start();
+        break;
+      case 'bets': //places one bet at a time given the amount the bot/driver sent in
+        this.bet(amountToBet);
+        break;
+      case 'deal': //deals cards to everyone
+        this.deal();
+        break;
+      case 'player':
+        this.player(verb);
+        break;
+      case 'dealer':
+        this.dealer();
+        break;
+      case 'payout':
+        this.payout();
+        break;
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
     /* TODO: 
