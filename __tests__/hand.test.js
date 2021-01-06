@@ -12,14 +12,13 @@ describe('Hand Object', () => {
   var card = new Card('9', 'S');
   var card2 = new Card('A', 'C');
   var card3 = new Card('5', 'H');
-  var card4 = new Card('K', 'D');
 
   it('Can create a new hand object', () => {
     expect(hand).toEqual({
       cards: [],
       player: player,
       bet: 0,
-      status: 'active'
+      status: 'active',
     });
   });
 
@@ -31,7 +30,7 @@ describe('Hand Object', () => {
       player: player,
       bet: 0,
       status: 'active',
-      count: 9
+      count: 9,
     });
   });
 
@@ -43,7 +42,7 @@ describe('Hand Object', () => {
       player: player,
       bet: 0,
       status: 'active',
-      count: 15
+      count: 15,
     });
   });
 });
@@ -54,8 +53,8 @@ describe('Handcount Object', () => {
   player.bank = 350;
   var hand = new Hand(player);
   var card = new Card('K', 'S');
-  var card2 = new Card('A', 'C');
-  var card3 = new Card('7', 'H');
+  var card2 = new Card('7', 'C');
+  var card3 = new Card('A', 'H');
 
 
   it('Can get the count of a hand with a face (K/Q/J)', () => {
@@ -69,7 +68,7 @@ describe('Handcount Object', () => {
     hand.addCard(card2);
     var count = hand.totalHandCount();
     hand.count = count;
-    expect(hand.count).toEqual(21);
+    expect(hand.count).toEqual(17);
   });
 
   //we should probably think of a better scenario to test than this because 
@@ -80,8 +79,25 @@ describe('Handcount Object', () => {
     hand.count = count;
     expect(hand.count).toEqual(18);
   });
+});
 
-  //need to test a hand with more than 1 ace.
-  //for example: a hand with 3, A, A, J = 15
+describe('Handcount Object doubble ace', () => {
+  var player = new Player('23457');
+  player.name = 'Bob';
+  player.bank = 350;
+  var hand = new Hand(player);
+  var card = new Card('A', 'S');
+  var card2 = new Card('A', 'C');
+  var card3 = new Card('7', 'H');
 
+
+  it('properly counts 2 aces and a card', () => {
+    hand.addCard(card);
+    hand.addCard(card2);
+    hand.addCard(card3);
+    var count = hand.totalHandCount();
+    console.log('in test HO card1', count);
+    hand.count = count;
+    expect(hand.count).toEqual(19);
+  });
 });
