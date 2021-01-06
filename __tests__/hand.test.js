@@ -25,12 +25,13 @@ describe('Hand Object', () => {
 
   it('Can add a card to a hand', () => {
     hand.addCard(card);
-    console.log(hand.count);
+    // console.log(hand.count);
     expect(hand).toEqual({
       cards: [card],
       player: player,
       bet: 0,
       status: 'active',
+      count: 9
     });
   });
 
@@ -38,10 +39,11 @@ describe('Hand Object', () => {
     hand.addCard(card2);
     hand.addCard(card3);
     expect(hand).toEqual({
-      cards: [card, card2, card3],
+      cards: [card, card3, card2],
       player: player,
       bet: 0,
       status: 'active',
+      count: 15
     });
   });
 });
@@ -56,19 +58,23 @@ describe('Handcount Object', () => {
   var card3 = new Card('A', 'H');
 
 
-  it('Can get the count of a hand with a face', () => {
+  it('Can get the count of a hand with a face (K/Q/J)', () => {
     hand.addCard(card);
     var count = hand.totalHandCount();
     hand.count = count;
     expect(hand.count).toEqual(10);
   });
-  it('Can get the count of a hand with a face and ace', () => {
+
+  it('Can get the count of a blackjack hand with a face (K/Q/J) and an ace', () => {
     hand.addCard(card2);
     var count = hand.totalHandCount();
     hand.count = count;
     expect(hand.count).toEqual(17);
   });
-  it('Can get the count of a hand with a face and ace and number', () => {
+
+  //we should probably think of a better scenario to test than this because 
+  //this would never happen (having blackjack then saying hit). 
+  it('Can get the count of a hand with a face (K/Q/J) and ace and number', () => {
     hand.addCard(card3);
     var count = hand.totalHandCount();
     hand.count = count;
@@ -86,7 +92,7 @@ describe('Handcount Object doubble ace', () => {
   var card3 = new Card('7', 'H');
 
 
-  it('Can get the count of a hand with a face', () => {
+  it('properly counts 2 aces and a card', () => {
     hand.addCard(card);
     hand.addCard(card2);
     hand.addCard(card3);
