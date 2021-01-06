@@ -62,8 +62,8 @@ describe('Dealer Object', () => {
   it('Can remove a player from the game for next round', async () => {
     console.log('PLAYERS === ', dealer.players);
     dealer.removePlayer('1');
-    expect(dealer.players.length).toBe(2);
-    expect(dealer.round.length).toBe(2);
+    expect(dealer.players.length).toBe(1);
+    //need to validate that the player is updated correctly in the db. 
   });
 
 

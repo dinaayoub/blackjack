@@ -31,9 +31,9 @@ class Dealer {
   start() {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
-    this.players.forEach (async (player) => {
+    this.players.forEach(async (player) => {
       console.log('player in start posistion', player);
-      if(player.bank < minBet){
+      if (player.bank < minBet) {
         console.log('buyin log');
         await this.buyIn(player);
       }
@@ -119,14 +119,12 @@ class Dealer {
     this.players.push(newPlayer);
   }
 
-  isUserWithID(id) {
-    return player.userID = id;
-  }
-
   removePlayer(userID) {
-    var playerIndex = this.players.find(this.isUserWithID, userID);
+    var playerIndex = this.players.find((player, index) => {
+      if (player.userID === userID) return index;
+    });
     if (playerIndex < 0) throw new Error('This player is not in the game');
-    this.players.delete(playerIndex);
+    this.players.splice(playerIndex, 1);
     //need to update them in the db?
   }
 
@@ -143,7 +141,8 @@ class Dealer {
     else
       this.currentPlayerIndex++;
   }
-  buyIn(player){
+
+  buyIn(player) {
     console.log('low player', player);
     console.log(`bank too low, reseting bank`);
     player.bank = 500;
@@ -255,24 +254,24 @@ class Dealer {
     //dealer action - hit or stand based on the rules. updates the state to payouts. 
     //payouts end of round. 
     switch (this.currentState) {
-    case 'start':
-      this.start();
-      break;
-    case 'bets': //places one bet at a time given the amount the bot/driver sent in
-      this.bet(amountToBet);
-      break;
-    case 'deal': //deals cards to everyone
-      this.deal();
-      break;
-    case 'player':
-      this.player(verb);
-      break;
-    case 'dealer':
-      this.dealer();
-      break;
-    case 'payout':
-      this.payout();
-      break;
+      case 'start':
+        this.start();
+        break;
+      case 'bets': //places one bet at a time given the amount the bot/driver sent in
+        this.bet(amountToBet);
+        break;
+      case 'deal': //deals cards to everyone
+        this.deal();
+        break;
+      case 'player':
+        this.player(verb);
+        break;
+      case 'dealer':
+        this.dealer();
+        break;
+      case 'payout':
+        this.payout();
+        break;
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
     /* TODO: 
