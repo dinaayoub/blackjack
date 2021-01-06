@@ -12,7 +12,7 @@ const options = {
 const getPlayer = require('../source/middleware/join');
 const updatePlayer = require('../source/middleware/update');
 const Player = require('../source/player');
-const userData = new Player('1');
+const userData = new Player('3');
 userData.name = 'dina';
 
 describe('User Model Test', () => {
