@@ -3,7 +3,7 @@
 const Dealer = require('../source/dealer');
 const Player = require('../source/player');
 
-describe('buyin',() =>{
+xdescribe('buyin',() =>{
   var dealer = new Dealer();
   var player1 = new Player('1111');
   player1.bank = 2;
