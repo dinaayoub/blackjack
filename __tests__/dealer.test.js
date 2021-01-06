@@ -14,6 +14,7 @@ describe('Dealer Object', () => {
       useNewUrlParser: true,
     });
     db = await connection.db(global.__MONGO_DB_NAME__);
+    console.log(db);
   });
 
   afterAll(async () => {
