@@ -1,11 +1,14 @@
 'use strict';
 const mongoose = require('mongoose');
 const Dealer = require('../source/dealer');
+const updatePlayer = require('../source/middleware/update');
 
 describe('Dealer Object', () => {
   var dealer = new Dealer();
+  var mockUpdate;
 
   beforeAll(async (done) => {
+    mockUpdate = jest.fn().mockImplementation(updatePlayer);
     await mongoose.connect(global.__MONGO_URI__, {
       useNewUrlParser: true,
       useCreateIndex: true,
@@ -21,6 +24,7 @@ describe('Dealer Object', () => {
 
   afterAll((done) => {
     mongoose.connection.close();
+    mockUpdate.mockRestore();
     done();
   });
 
@@ -63,7 +67,7 @@ describe('Dealer Object', () => {
     console.log('PLAYERS === ', dealer.players);
     dealer.removePlayer('1');
     expect(dealer.players.length).toBe(1);
-    //need to validate that the player is updated correctly in the db. 
+    //need to validate that the player is updated correctly in the db?
   });
 
 

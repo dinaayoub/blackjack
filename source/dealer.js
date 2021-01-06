@@ -28,13 +28,43 @@ class Dealer {
     this.round = [];
   }
 
+  async addPlayer(userID) {
+    //instead of returning table is full, maybe spin up a new table in a different discord channel? 
+    if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
+
+    // this logic might need to be changed 
+    // upon changes to new Player instantiation 
+    let newPlayer = new Player(userID);
+    let playerRecord = await getPlayer(newPlayer);
+    newPlayer.name = playerRecord.name;
+    newPlayer.bank = playerRecord.bank;
+    newPlayer.currentLosses = playerRecord.losses;
+    newPlayer.currentWins = playerRecord.wins;
+    newPlayer.currentPushes = playerRecord.pushes;
+    this.players.push(newPlayer);
+  }
+
+  removePlayer(userID) {
+    var playerIndex = this.players.findIndex((player, index) => {
+      return player.userID === userID;
+    });
+    if (playerIndex < 0) throw new Error('This player is not in the game');
+    var player = this.players[playerIndex];
+    // update the player in the database
+    updatePlayer(player);
+    // then remove them from the queue for next hand
+    this.players.splice(playerIndex, 1);
+    // potentially remove them from current hand as well? they'd be
+    // forfeiting their bet but i think that's ok as it's how other games do it
+  }
+
   start() {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
     this.players.forEach(async (player) => {
-      console.log('player in start posistion', player);
+      // console.log('player in start posistion', player);
       if (player.bank < minBet) {
-        console.log('buyin log');
+        // console.log('buyin log');
         await this.buyIn(player);
       }
       this.round.push(new Hand(player));
@@ -100,33 +130,7 @@ class Dealer {
     }
   }
 
-  async addPlayer(userID) {
-    //instead of returning table is full, maybe spin up a new table in a different discord channel? 
-    if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
 
-    // this logic might need to be changed 
-    // upon changes to new Player instantiation 
-    let newPlayer = new Player(userID);
-    // console.log(newPlayer);
-    let playerRecord = await getPlayer(newPlayer);
-    // console.log(playerRecord);
-    newPlayer.name = playerRecord.name;
-    newPlayer.bank = playerRecord.bank;
-    newPlayer.currentLosses = playerRecord.losses;
-    newPlayer.currentWins = playerRecord.wins;
-    newPlayer.currentPushes = playerRecord.pushes;
-    // console.log(newPlayer);
-    this.players.push(newPlayer);
-  }
-
-  removePlayer(userID) {
-    var playerIndex = this.players.find((player, index) => {
-      if (player.userID === userID) return index;
-    });
-    if (playerIndex < 0) throw new Error('This player is not in the game');
-    this.players.splice(playerIndex, 1);
-    //need to update them in the db?
-  }
 
   hit() {
     //hit the given user with one more card from the shoe. 
