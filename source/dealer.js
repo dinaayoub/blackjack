@@ -114,8 +114,12 @@ class Dealer {
     this.players.push(newPlayer);
   }
 
+  isUserWithID(id) {
+    return player.userID = id;
+  }
+
   removePlayer(userID) {
-    var playerIndex = this.players.indexOf({ id: userID });
+    var playerIndex = this.players.find(this.isUserWithID, userID);
     if (playerIndex < 0) throw new Error('This player is not in the game');
     this.players.delete(playerIndex);
     //need to update them in the db?

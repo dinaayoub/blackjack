@@ -36,25 +36,35 @@ describe('Dealer Object', () => {
     }).toThrow();
   });
 
-
-  it('Can start a game using the start function', async (done) => {
+  it('Can add a player to the game for next round', async () => {
     await dealer.addPlayer('1');
     await dealer.addPlayer('2');
+    expect(dealer.players.length).toBe(2);
+    expect(dealer.round.length).toBe(0);
+  });
+
+  it('Can start a game using the start function', async () => {
     dealer.start();
     expect(dealer.round.length).toEqual(3);
     expect(dealer.currentState).toEqual('bets');
     expect(dealer.currentPlayerIndex).toEqual(0);
-    done();
   });
 
-  it('Can place bets for all non-dealers players', async (done) => {
+  it('Can place bets for all non-dealers players', async () => {
     dealer.bet(25);
     dealer.bet(50);
     expect(dealer.round[0].bet).toStrictEqual(25);
     expect(dealer.round[1].bet).toStrictEqual(50);
     expect(dealer.round[2].bet).toStrictEqual(0); //dealer's bet should always be 0
     expect(dealer.currentState).toStrictEqual('deal');
-    done();
   });
+
+  it('Can remove a player from the game for next round', async () => {
+    console.log('PLAYERS === ', dealer.players);
+    dealer.removePlayer('1');
+    expect(dealer.players.length).toBe(2);
+    expect(dealer.round.length).toBe(2);
+  });
+
 
 });
