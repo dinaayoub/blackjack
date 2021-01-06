@@ -75,3 +75,24 @@ describe('Handcount Object', () => {
     expect(hand.count).toEqual(18);
   });
 });
+
+describe('Handcount Object doubble ace', () => {
+  var player = new Player('23457');
+  player.name = 'Bob';
+  player.bank = 350;
+  var hand = new Hand(player);
+  var card = new Card('A', 'S');
+  var card2 = new Card('A', 'C');
+  var card3 = new Card('7', 'H');
+
+
+  it('Can get the count of a hand with a face', () => {
+    hand.addCard(card);
+    hand.addCard(card2);
+    hand.addCard(card3);
+    var count = hand.totalHandCount();
+    console.log('in test HO card1', count);
+    hand.count = count;
+    expect(hand.count).toEqual(19);
+  });
+});
