@@ -14,7 +14,7 @@ describe('Player Object', () => {
     player.earnings = 50;
 
     expect(player).toEqual({
-      id: '23457',
+      userID: '23457',
       name: 'Bob',
       bank: 350,
       earnings: 50,

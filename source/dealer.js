@@ -179,9 +179,6 @@ class Dealer {
           }
           //otherwise player loses, do nothing
         }
-        // TODO: save all users to db
-        // [x] may need to update leave.js arguments since it expects to take from req.body
-
         // update what the player bank is after earnings
         hand.player.bank += hand.player.earnings;
         updatePlayer(hand.player);
