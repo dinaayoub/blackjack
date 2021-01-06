@@ -32,6 +32,10 @@ class Dealer {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
     this.players.forEach(player => {
+      if(player.bank < minBet){
+        this.buyIn(player.id)
+        this.round.push(new Hand(player));
+      }
       this.round.push(new Hand(player));
     });
     var dealerRound = new Hand('dealer');
@@ -127,6 +131,11 @@ class Dealer {
     else
       this.currentPlayerIndex++;
   }
+  buyIn(userID){
+    var playerIndex = this.players.indexOf({ id: userID });
+    console.log(`bank too low, reseting bank`);
+    playerIndex.bank = 500;
+  }
 
   payout() {
     var dealerCount = this.round[this.round.length - 1].count; //get the count of the dealer's hand first. 
@@ -144,13 +153,7 @@ class Dealer {
             hand.player.earnings += hand.bet * 2.5;
             hand.player.currentWins += 1;
           } else {
-            hand.player.currentLosses += 1;
-          }
-        } else if (dealerCount === 21) {
-          //the dealer has blackjack, "push" any players who also have blackjack, and everyone else loses. 
-          if (hand.count === 21) {
-            //push (tie) for people who got 21, just give them back their bet
-            hand.player.earnings += hand.bet;
+            this.player.buyInhand.player.earnings += hand.bet;
             hand.player.currentPushes += 1;
           } else {
             hand.player.currentLosses += 1;
