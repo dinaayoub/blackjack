@@ -3,7 +3,7 @@
 const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require('./hand');
-
+const express = require('express');
 // db functions 
 const updatePlayer = require('./middleware/update');
 const getPlayer = require('./middleware/join');
@@ -34,7 +34,7 @@ class Dealer {
     this.players.forEach(player => {
       this.round.push(new Hand(player));
     });
-    var dealerRound = new Hdeand('dealer');
+    var dealerRound = new Hand('dealer');
     this.round.push(dealerRound);
     this.currentState = 'bets';
     this.currentPlayerIndex = 0;
@@ -260,13 +260,6 @@ class Dealer {
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
     /* TODO: 
-<<<<<<< HEAD
-=======
-      - [x] figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
-      - [x] implement stand
-      - [x] implement bet
-      - [x] implement hit
->>>>>>> f90873ae04ea92b349ff32e079300895886bad06
       - [ ] how much money does a player start off with?
       - [ ] save that info to the db in the player object
       - [ ] command line or discord bot "driver" that drives the game. 

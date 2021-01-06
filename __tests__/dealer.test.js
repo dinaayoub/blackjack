@@ -26,14 +26,14 @@ describe('Dealer Object', () => {
     expect(dealer.currentPlayerIndex).toEqual(0);
   });
 
-  it('Can place bets for all non-dealers players', () => {
-    dealer.bet(25);
-    dealer.bet(50);
-    expect(dealer.round[0].bet).toStrictEqual(25);
-    expect(dealer.round[1].bet).toStrictEqual(50);
-    expect(dealer.round[2].bet).toStrictEqual(0); //dealer's bet should always be 0
-    expect(dealer.currentState).toStrictEqual('deal');
-  });
+  // it('Can place bets for all non-dealers players', () => {
+  //   dealer.bet(25);
+  //   dealer.bet(50);
+  //   expect(dealer.round[0].bet).toStrictEqual(25);
+  //   expect(dealer.round[1].bet).toStrictEqual(50);
+  //   expect(dealer.round[2].bet).toStrictEqual(0); //dealer's bet should always be 0
+  //   expect(dealer.currentState).toStrictEqual('deal');
+  // });
 
 
 });
