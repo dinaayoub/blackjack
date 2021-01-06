@@ -31,7 +31,12 @@ class Dealer {
   start() {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
-    this.players.forEach(player => {
+    this.players.forEach (async (player) => {
+      console.log('player in start posistion', player);
+      if(player.bank < minBet){
+        console.log('buyin log');
+        await this.buyIn(player);
+      }
       this.round.push(new Hand(player));
     });
     var dealerRound = new Hand('dealer');
@@ -134,6 +139,11 @@ class Dealer {
     else
       this.currentPlayerIndex++;
   }
+  buyIn(player){
+    console.log('low player', player);
+    console.log(`bank too low, reseting bank`);
+    player.bank = 500;
+  }
 
   payout() {
     var dealerCount = this.round[this.round.length - 1].count; //get the count of the dealer's hand first. 
@@ -223,7 +233,7 @@ class Dealer {
     }
     if (houseCount <= 21) {
       this.stand(this.currentPlayerIndex);
-      if (houseCount === 21) this.round[this.currentPlayerIndex].status = 'blackjack'
+      if (houseCount === 21) this.round[this.currentPlayerIndex].status = 'blackjack';
       else this.round[this.currentPlayerIndex].status = 'stand';
     }
     else if (houseCount > 21) {
@@ -235,32 +245,30 @@ class Dealer {
   next(verb, amountToBet) {
     //this will do whatever is next in the queue of operations based on current state and current player
     console.log('CURRENT STATE = ', this.currentState);
-    //sequence of events: https://bicyclecards.com/how-to-play/blackjack/
-    //start of a round - copying the list of current players into this.round, adding the dealer to the round, updating the state to bets
-    //bets - each player except dealer places a bet. todo: implement the betting. after all bets are complete, updates state to deal
+    //sequence of events: https://bicycleca this.currentState = 'start';es a bet. todo: implement the betting. after all bets are complete, updates state to deal
     //deal - will deal each player one card at a time, with dealer being last, until each player has two cards in hand. If the dealer has blackjack, anyone without black jack loses, update the state to payouts. Otherwise, Updates the state to player
     //player action - can hit or stand. If they bust or stand, we end their player action. after all players are done, updates the state to dealer
     //dealer action - hit or stand based on the rules. updates the state to payouts. 
     //payouts end of round. 
     switch (this.currentState) {
-      case 'start':
-        this.start();
-        break;
-      case 'bets': //places one bet at a time given the amount the bot/driver sent in
-        this.bet(amountToBet);
-        break;
-      case 'deal': //deals cards to everyone
-        this.deal();
-        break;
-      case 'player':
-        this.player(verb);
-        break;
-      case 'dealer':
-        this.dealer();
-        break;
-      case 'payout':
-        this.payout();
-        break;
+    case 'start':
+      this.start();
+      break;
+    case 'bets': //places one bet at a time given the amount the bot/driver sent in
+      this.bet(amountToBet);
+      break;
+    case 'deal': //deals cards to everyone
+      this.deal();
+      break;
+    case 'player':
+      this.player(verb);
+      break;
+    case 'dealer':
+      this.dealer();
+      break;
+    case 'payout':
+      this.payout();
+      break;
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
     /* TODO: 
