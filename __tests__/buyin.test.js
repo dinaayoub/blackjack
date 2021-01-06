@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Dealer = require('../source/dealer');
 
 
-describe('buyin',() =>{
+describe('buyin', () => {
   let spy;
 
   beforeAll(async (done) => {
@@ -27,7 +27,7 @@ describe('buyin',() =>{
   });
 
   var dealer = new Dealer();
-  it('Can ask low bank players to buyin before start of hand', async() => { 
+  it('Can ask low bank players to buyin before start of hand', async () => {
     await dealer.addPlayer('1111');
     dealer.players[0].bank = 3;
     dealer.start();
