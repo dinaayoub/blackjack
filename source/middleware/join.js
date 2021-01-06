@@ -11,13 +11,16 @@ const Users = require('../schema/user.schema');
 async function getPlayer(player) {
   let record;
   // checks if user already exists in db 
-  if(Users.find({userID: player.id}).count() > 0) {
+  if (Users.find({ userID: player.id }).count() > 0) {
     // if so we will find and save the user to record 
-    record = await Users.findOne({userID: player.id});
+    record = await Users.findOne({ userID: player.id });
+    console.log('retrieved RECORD = ', record);
   } else {
     // if not we will call addNewPlayer to the db
-    addNewPlayer(player);
+    record = await addNewPlayer(player);
+    console.log('added RECORD = ', record);
   }
+  console.log('RECORD = ', record);
   return JSON.parse(record); // this might not return in a proper format
 }
 
@@ -25,8 +28,9 @@ async function getPlayer(player) {
 // create a new player record 
 async function addNewPlayer(player) {
   // a new player is saved only with their userID and name
-  let newRecord = new Users({userID: player.id, name: player.name});
-  return newRecord.save();
+  let newRecord = new Users({ userID: player.id, name: player.name });
+  console.log('NEW RECORD = ', newRecord);
+  return await newRecord.save();
 }
 
 module.exports = getPlayer;
