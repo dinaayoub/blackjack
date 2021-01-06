@@ -118,6 +118,7 @@ class Dealer {
     var playerIndex = this.players.indexOf({ id: userID });
     if (playerIndex < 0) throw new Error('This player is not in the game');
     this.players.delete(playerIndex);
+    //need to update them in the db?
   }
 
   hit() {

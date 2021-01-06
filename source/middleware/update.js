@@ -18,7 +18,7 @@ async function updatePlayer(player) {
     },
     { new: true }
   );
-  console.log(record);
+  // console.log(record);
   return record;
 }
 

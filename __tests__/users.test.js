@@ -28,7 +28,7 @@ describe('User Model Test', () => {
   });
 
   afterAll(() => {
-    mongoose.close();
+    mongoose.connection.close();
   });
 
   it('Can create & save a new user successfully', async () => {

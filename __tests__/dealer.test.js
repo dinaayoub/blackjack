@@ -5,7 +5,7 @@ const Dealer = require('../source/dealer');
 describe('Dealer Object', () => {
   var dealer = new Dealer();
 
-  beforeAll(async () => {
+  beforeAll(async (done) => {
     await mongoose.connect(global.__MONGO_URI__, {
       useNewUrlParser: true,
       useCreateIndex: true,
@@ -16,11 +16,14 @@ describe('Dealer Object', () => {
         process.exit(1);
       }
     });
+    done();
   });
 
-  afterAll(() => {
-    mongoose.close();
+  afterAll((done) => {
+    mongoose.connection.close();
+    done();
   });
+
   it('Can create a new dealer object', () => {
     expect(dealer.currentState).toEqual('start');
     expect(dealer.round.length).toEqual(0);
@@ -34,22 +37,24 @@ describe('Dealer Object', () => {
   });
 
 
-  it('Can start a game using the start function', async () => {
+  it('Can start a game using the start function', async (done) => {
     await dealer.addPlayer('1');
     await dealer.addPlayer('2');
     dealer.start();
     expect(dealer.round.length).toEqual(3);
     expect(dealer.currentState).toEqual('bets');
     expect(dealer.currentPlayerIndex).toEqual(0);
+    done();
   });
 
-  it('Can place bets for all non-dealers players', async () => {
+  it('Can place bets for all non-dealers players', async (done) => {
     dealer.bet(25);
     dealer.bet(50);
     expect(dealer.round[0].bet).toStrictEqual(25);
     expect(dealer.round[1].bet).toStrictEqual(50);
     expect(dealer.round[2].bet).toStrictEqual(0); //dealer's bet should always be 0
     expect(dealer.currentState).toStrictEqual('deal');
+    done();
   });
 
 });
