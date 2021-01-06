@@ -20,4 +20,24 @@ describe('Shoe object', () => {
     expect(shoe.usedShoe.length).toEqual(1);
     expect(shoe.shoe.length).toEqual(51);
   });
+  it('should refill the shoe when shuffled', () => {
+    const shoe = new Shoe(1);
+    shoe.getOneCard();
+    shoe.getOneCard();
+    shoe.getOneCard();
+    expect(shoe.usedShoe.length).toEqual(3);
+    shoe.refillShoe();
+    expect(shoe.usedShoe.length).toEqual(0);
+  });
+  it('should shuffle when <20% of the deck remains', () => {
+    const shoe = new Shoe(1);
+    console.log(shoe.shoe.length);
+    for (let i = 0; i < 41; i++ ){
+      shoe.getOneCard();
+    }
+    shoe.getOneCard();
+    shoe.getOneCard();
+    console.log(shoe.shoe.length);
+    expect(shoe.shoe.length).toEqual(51);
+  });
 });

@@ -4,6 +4,10 @@ const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require('./hand');
 
+// db functions 
+const updatePlayer = require('./middleware/update');
+const getPlayer = require('./middleware/join');
+
 var numberOfDecks = 6; //this should be changeable
 var maxPlayers = 7;
 var minBet = 5;
@@ -80,7 +84,7 @@ class Dealer {
     //if the dealer has black jack! Skip straight to payouts. 
     if (this.round[this.round.length - 1].count === 21) {
       this.round[this.round.length - 1].status = 'blackjack';
-      this.currentState = 'payouts'
+      this.currentState = 'payouts';
     }
     //otherwise, continue on to player round
     else {
@@ -91,7 +95,17 @@ class Dealer {
   addPlayer(userID) {
     //instead of returning table is full, maybe spin up a new table in a different discord channel? 
     if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
-    this.players.push(new Player(userID));
+
+    // this logic might need to be changed 
+    // upon changes to new Player instantiation 
+    let newPlayer = new Player(userID);
+    let playerRecord = getPlayer(newPlayer);
+    newPlayer.name = playerRecord.name;
+    newPlayer.bank = playerRecord.bank;
+    newPlayer.currentLosses = playerRecord.losses;
+    newPlayer.currentWins = playerRecord.wins;
+    newPlayer.currentPushes = playerRecord.pushes;
+    this.players.push(newPlayer);
   }
 
   removePlayer(userID) {
@@ -123,43 +137,72 @@ class Dealer {
           //the dealer busted. pay out all players who did not bust.
           if (hand.count < 21) {
             //payout 1x for people who got 20 or less points
-            hand.player.bank += hand.bet * 2;
+            hand.player.earnings += hand.bet * 2;
+            hand.player.currentWins += 1;
           } else if (hand.count === 21) {
             //payout 1.5x for people who got 21
-            hand.player.bank += hand.bet * 2.5;
+            hand.player.earnings += hand.bet * 2.5;
+            hand.player.currentWins += 1;
+          } else {
+            hand.player.currentLosses += 1;
           }
         } else if (dealerCount === 21) {
           //the dealer has blackjack, "push" any players who also have blackjack, and everyone else loses. 
           if (hand.count === 21) {
             //push (tie) for people who got 21, just give them back their bet
-            hand.player.bank += hand.bet;
+            hand.player.earnings += hand.bet;
+            hand.player.currentPushes += 1;
+          } else {
+            hand.player.currentLosses += 1;
           }
         } else {
           //the dealer has a number < 21
           if (hand.count === 21) {
             //payout 1.5x for people who got 21
-            hand.player.bank += hand.bet * 2.5;
+            hand.player.earnings += hand.bet * 2.5;
           } else if (hand.count > dealerCount) {
             //player wins 
-            hand.player.bank += hand.bet * 2;
+            hand.player.earnings += hand.bet * 2;
           } else if (hand.count === dealerCount) {
             //push, player gets their bet back
-            hand.player.bank += hand.bet;
+            hand.player.earnings += hand.bet;
+            hand.player.currentPushes += 1;
+          } else {
+            hand.player.currentLosses += 1;
           }
           //otherwise player loses, do nothing
         }
+        // TODO: save all users to db
+        // [x] may need to update leave.js arguments since it expects to take from req.body
+
+        // update what the player bank is after earnings
+        hand.player.bank += hand.player.earnings;
+        updatePlayer(hand.player);
       }
     });
 
     this.currentState = 'start';
-
-    //TODO: Save all users to db. 
   }
 
   player(verb) {
     // TODO :insert logics that
     // deals with one player at a time. prompting with actions available based on hand
-    // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+    this.round.forEach(hand => {
+      // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+      if (hand.count > 21) {
+        // this.hand.status = 'bust';
+        this.round[this.currentPlayerIndex].status = 'bust';
+        this.currentPlayerIndex++;
+      } else if (hand.count === 21) {
+        this.hand.status = 'blackjack';
+        this.currentPlayerIndex++;
+      } else if (this.player.hit) {
+        this.hit();
+      } else if (this.player.stand) {
+        this.hand.status = 'stand';
+        this.stand();
+      }
+    });
 
     //once this player busts or stands, update current index 
     if (this.currentPlayerIndex === this.round.length - 1)
@@ -180,7 +223,7 @@ class Dealer {
       else this.round[this.currentPlayerIndex].status = 'stand';
     }
     else if (houseCount > 21) {
-      this.round[currentPlayerIndex].status = 'bust';
+      this.round[this.currentPlayerIndex].status = 'bust';
     }
     this.currentState = 'payout';
   }
@@ -217,6 +260,13 @@ class Dealer {
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
     /* TODO: 
+<<<<<<< HEAD
+=======
+      - [x] figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
+      - [x] implement stand
+      - [x] implement bet
+      - [x] implement hit
+>>>>>>> f90873ae04ea92b349ff32e079300895886bad06
       - [ ] how much money does a player start off with?
       - [ ] save that info to the db in the player object
       - [ ] command line or discord bot "driver" that drives the game. 
