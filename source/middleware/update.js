@@ -5,7 +5,6 @@ const Users = require('../schema/user.schema');
 
 // essentially update 
 async function updatePlayer(player) {
-  console.log(player);
   // will need to be updated per discord.js logic 
   let record = await Users.findOneAndUpdate(
     { userid: player.userID },
@@ -18,7 +17,6 @@ async function updatePlayer(player) {
     },
     { new: true }
   );
-  // console.log(record);
   return record;
 }
 
