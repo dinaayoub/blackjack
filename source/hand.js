@@ -21,7 +21,6 @@ class Hand {
     for (let i = 0; i < handLength; i++) {
       if (this.cards[i].rank === 'A') {
         var aceCard = this.cards.splice(i, 1);
-        // console.log(aceCard,'ace');
         this.cards.push(aceCard[0]);
         i--;
         handLength--;
