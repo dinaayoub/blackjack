@@ -37,11 +37,6 @@ describe('Hand Object', () => {
   it('Can add multiple cards to a hand', () => {
     hand.addCard(card2);
     hand.addCard(card3);
-<<<<<<< HEAD
-=======
-    console.log(hand);
-    console.log(hand.count);
->>>>>>> f90873ae04ea92b349ff32e079300895886bad06
     expect(hand).toEqual({
       cards: [card, card2, card3],
       player: player,
@@ -64,7 +59,7 @@ describe('Handcount Object', () => {
   it('Can get the count of a hand with a face', () => {
     hand.addCard(card);
     var count = hand.totalHandCount();
-    console.log('in test HO card1' ,count);
+    console.log('in test HO card1', count);
     hand.count = count;
     expect(hand.count).toEqual(10);
   });
@@ -72,13 +67,13 @@ describe('Handcount Object', () => {
     hand.addCard(card2);
     var count = hand.totalHandCount();
     hand.count = count;
-    console.log('in test HO card2' ,count);
+    console.log('in test HO card2', count);
     expect(hand.count).toEqual(21);
   });
   it('Can get the count of a hand with a face and ace and number', () => {
     hand.addCard(card3);
     var count = hand.totalHandCount();
-    console.log('in test HO card3' ,count);
+    console.log('in test HO card3', count);
     hand.count = count;
     expect(hand.count).toEqual(18);
   });
