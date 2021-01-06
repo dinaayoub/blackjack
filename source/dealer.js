@@ -95,7 +95,7 @@ class Dealer {
     }
   }
 
-  addPlayer(userID) {
+  async addPlayer(userID) {
     //instead of returning table is full, maybe spin up a new table in a different discord channel? 
     if (this.players.length === this.maxPlayers) throw new Error('This table is full.');
 
@@ -103,8 +103,8 @@ class Dealer {
     // upon changes to new Player instantiation 
     let newPlayer = new Player(userID);
     // console.log(newPlayer);
-    let playerRecord = getPlayer(newPlayer);
-    //console.log(playerRecord);
+    let playerRecord = await getPlayer(newPlayer);
+    // console.log(playerRecord);
     newPlayer.name = playerRecord.name;
     newPlayer.bank = playerRecord.bank;
     newPlayer.currentLosses = playerRecord.losses;
