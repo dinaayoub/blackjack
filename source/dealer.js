@@ -3,23 +3,71 @@
 const Shoe = require('./shoe');
 const Player = require('./player');
 const Hand = require('./hand');
-
+const express = require('express');
 // db functions 
 const updatePlayer = require('./middleware/update');
 const getPlayer = require('./middleware/join');
 
 var numberOfDecks = 6; //this should be changeable
 var maxPlayers = 7;
+var minBet = 5;
+var maxBet = 50;
 
 class Dealer {
-  constructor() {
-    this.shoe = new Shoe(numberOfDecks);
-    this.maxPlayers = maxPlayers;
+  constructor(minBets, maxBets, numOfDecks, numOfMaxPlayers) {
+    //if these parameters are passed in to the dealer, respect them. 
+    //otherwise use the defaults. 
+    this.shoe = new Shoe(numOfDecks || numberOfDecks);
+    this.maxPlayers = numOfMaxPlayers || maxPlayers;
+    this.minBet = minBets || minBet;
+    this.maxBet = maxBets || maxBet;
     this.dealer = new Player('dealer');
     this.currentState = 'start';
     this.currentPlayerIndex = 0;
     this.players = [];
     this.round = [];
+  }
+
+  start() {
+    this.round = [];
+    if (this.players.length === 0) throw new Error('No players in the game');
+    this.players.forEach(player => {
+      this.round.push(new Hand(player));
+    });
+    var dealerRound = new Hand('dealer');
+    this.round.push(dealerRound);
+    this.currentState = 'bets';
+    this.currentPlayerIndex = 0;
+  }
+
+  bet(amount) {
+    //find the hand associated with the current player by the index we are keepign track of
+    var currentPlayerHand = this.round[this.currentPlayerIndex];
+
+    //check if the player's bank has enough money
+    if (currentPlayerHand.player.bank >= amount) {
+      //add the bet to the player's hand
+      currentPlayerHand.bet = amount;
+      //remove the amount from the player's bank
+      currentPlayerHand.player.bank -= amount;
+      //need to update database
+    }
+    else {
+      //the player doesn't have enough money. ask them to buy in somehow?
+      return new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
+    }
+
+    //if next player is not the dealer, move on to the next player.
+    if (this.currentPlayerIndex < this.round.length - 2) {
+      this.currentPlayerIndex++;
+    }
+    //if the next player is the dealer, reset player index to 0 and change current state to 'deal' as betting is done for all players.
+    else if (this.currentPlayerIndex === this.round.length - 2) {
+      //next player is the dealer who doesn't bet, so move on to next()
+      this.currentPlayerIndex = 0;
+      this.currentState = 'deal';
+    }
+    //return currentPlayersHand;
   }
 
   deal() {
@@ -50,7 +98,7 @@ class Dealer {
 
     // this logic might need to be changed 
     // upon changes to new Player instantiation 
-    let newPlayer = new Player(userID); 
+    let newPlayer = new Player(userID);
     let playerRecord = getPlayer(newPlayer);
     newPlayer.name = playerRecord.name;
     newPlayer.bank = playerRecord.bank;
@@ -68,7 +116,7 @@ class Dealer {
 
   hit() {
     //hit the given user with one more card from the shoe. 
-    this.round[this.currentPlayerIndex].hand.addCard(this.shoe.getOneCard());
+    this.round[this.currentPlayerIndex].addCard(this.shoe.getOneCard());
   }
 
   stand() {
@@ -78,37 +126,6 @@ class Dealer {
     }
     else
       this.currentPlayerIndex++;
-  }
-
-  bet(amount) {
-    //find the hand associated with the current player by the index we are keepign track of
-    var currentPlayerHand = this.round[this.currentPlayerIndex];
-
-    //check if the player's bank has enough money
-    if (currentPlayerHand.player.bank >= amount) {
-      //add the bet to the player's hand
-      currentPlayerHand.bet = amount;
-      //remove the amount from the player's bank
-      currentPlayerHand.player.bank -= amount;
-      //need to update database
-      updatePlayer(currentPlayerHand.player);
-    }
-    else {
-      //the player doesn't have enough money. ask them to buy in somehow?
-      return new Error(`Player ${currentPlayerHand.player.name} does not have enough money in the bank to buy in.`);
-    }
-
-    //if next player is not the dealer, move on to the next player.
-    if (this.currentPlayerIndex < this.round.length - 2) {
-      this.currentPlayerIndex++;
-    }
-    //if the next player is the dealer, reset player index to 0 and change current state to 'deal' as betting is done for all players.
-    else if (this.currentPlayerIndex === this.round.length - 2) {
-      //next player is the dealer who doesn't bet, so move on to next()
-      this.currentPlayerIndex = 0;
-      this.currentState = 'deal';
-    }
-    //return currentPlayersHand;
   }
 
   payout() {
@@ -157,9 +174,9 @@ class Dealer {
         }
         // TODO: save all users to db
         // [x] may need to update leave.js arguments since it expects to take from req.body
-  
+
         // update what the player bank is after earnings
-        hand.player.bank += hand.player.earnings; 
+        hand.player.bank += hand.player.earnings;
         updatePlayer(hand.player);
       }
     });
@@ -167,33 +184,21 @@ class Dealer {
     this.currentState = 'start';
   }
 
-  start() {
-    this.round = [];
-    if (this.players.length === 0) throw new Error('No players in the game');
-    this.players.forEach(player => {
-      this.round.push(new Hand(player));
-    });
-    var dealerRound = new Hand('dealer');
-    this.round.push(dealerRound);
-    this.currentState = 'bets';
-    this.currentPlayerIndex = 0;
-  }
-
-  player() {
+  player(verb) {
     // TODO :insert logics that
     // deals with one player at a time. prompting with actions available based on hand
     this.round.forEach(hand => {
       // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
-      if(hand.count > 21){
+      if (hand.count > 21) {
         // this.hand.status = 'bust';
         this.round[this.currentPlayerIndex].status = 'bust';
         this.currentPlayerIndex++;
-      } else if (hand.count === 21){
+      } else if (hand.count === 21) {
         this.hand.status = 'blackjack';
         this.currentPlayerIndex++;
-      } else if (this.player.hit){
+      } else if (this.player.hit) {
         this.hit();
-      } else if (this.player.stand){
+      } else if (this.player.stand) {
         this.hand.status = 'stand';
         this.stand();
       }
@@ -207,12 +212,15 @@ class Dealer {
   }
 
   dealer() {
-    var houseCount = this.round[this.round.length - 1].count;
+    var houseCount = this.round[this.currentPlayerIndex].count;
     while (houseCount < 17) {
       this.hit(this.currentPlayerIndex);
+      this.round[this.currentPlayerIndex].status = 'active';
     }
     if (houseCount <= 21) {
       this.stand(this.currentPlayerIndex);
+      if (houseCount === 21) this.round[this.currentPlayerIndex].status = 'blackjack'
+      else this.round[this.currentPlayerIndex].status = 'stand';
     }
     else if (houseCount > 21) {
       this.round[this.currentPlayerIndex].status = 'bust';
@@ -231,39 +239,31 @@ class Dealer {
     //dealer action - hit or stand based on the rules. updates the state to payouts. 
     //payouts end of round. 
     switch (this.currentState) {
-    case 'start':
-      this.start();
-      break;
-    case 'bets': //places one bet at a time given the amount the bot/driver sent in
-      this.bet(amountToBet);
-      break;
-    case 'deal': //deals cards to everyone
-      this.deal();
-      break;
-    case 'player':
-      this.player(verb);
-      break;
-    case 'dealer':
-      this.dealer();
-      break;
-    case 'payout':
-      this.payout();
-      break;
+      case 'start':
+        this.start();
+        break;
+      case 'bets': //places one bet at a time given the amount the bot/driver sent in
+        this.bet(amountToBet);
+        break;
+      case 'deal': //deals cards to everyone
+        this.deal();
+        break;
+      case 'player':
+        this.player(verb);
+        break;
+      case 'dealer':
+        this.dealer();
+        break;
+      case 'payout':
+        this.payout();
+        break;
     }
-    return (this.currentState);
+    return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
     /* TODO: 
-      - [x] figure out how to reset the shoe when there is <20% left of cards (and when current round is done)
-      - [x] implement stand
-      - [x] implement bet
-      - [x] implement hit
       - [ ] how much money does a player start off with?
       - [ ] save that info to the db in the player object
       - [ ] command line or discord bot "driver" that drives the game. 
-      - [x] return the current state to the driver from next()
-      - [x] dealer logic for hitting or standing. 
-      - [x] create a mongo schema for users
-      - [x] add the API routes
-      */
+    */
   }
 }
 
