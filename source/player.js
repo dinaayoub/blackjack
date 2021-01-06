@@ -2,7 +2,7 @@
 
 class Player {
   constructor(userID) {
-    this.id = userID;
+    this.userID = userID;
     this.name = '';
     this.bank = 500;
     this.earnings = 0;
