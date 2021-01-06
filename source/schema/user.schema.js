@@ -11,4 +11,6 @@ const users = new mongoose.Schema({
   bank: { type: Number, required: true, default: 500 },
 });
 
-module.exports = users;
+const userModel = mongoose.model('users', users);
+
+module.exports = userModel;

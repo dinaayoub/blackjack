@@ -16,7 +16,7 @@ async function getPlayer(player) {
     record = await Users.findOne({userID: player.id});
   } else {
     // if not we will call addNewPlayer to the db
-    addNewPlayer(player);
+    record = addNewPlayer(player);
   }
   return JSON.parse(record); // this might not return in a proper format
 }
