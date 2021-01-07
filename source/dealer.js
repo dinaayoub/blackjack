@@ -62,7 +62,7 @@ class Dealer {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
     this.players.forEach(async (player) => {
-      // console.log('player in start posistion', player);
+      // console.log('player in start position', player);
       if (player.bank < minBet) {
         // console.log('buyin log');
         await this.buyIn(player);
@@ -139,7 +139,7 @@ class Dealer {
 
   stand() {
     //the user does not want any other cards.
-    //this.round[this.currentPlayerIndex].status = 'stand';
+    // if the current player is the dealer, reset to the beginning as the "next" player is the first player
     if (this.currentPlayerIndex === this.round.length - 1) {
       this.currentPlayerIndex = 0;
     }
@@ -262,34 +262,42 @@ class Dealer {
   }
 
   next(verb, amountToBet) {
-    //this will do whatever is next in the queue of operations based on current state and current player
-    console.log('CURRENT STATE = ', this.currentState);
-    //sequence of events: https://bicycleca this.currentState = 'start';es a bet. todo: implement the betting. after all bets are complete, updates state to deal
-    //deal - will deal each player one card at a time, with dealer being last, until each player has two cards in hand. If the dealer has blackjack, anyone without black jack loses, update the state to payouts. Otherwise, Updates the state to player
-    //player action - can hit or stand. If they bust or stand, we end their player action. after all players are done, updates the state to dealer
-    //dealer action - hit or stand based on the rules. updates the state to payouts. 
-    //payouts end of round. 
-    switch (this.currentState) {
-      case 'start':
-        this.start();
-        break;
-      case 'bets': //places one bet at a time given the amount the bot/driver sent in
-        this.bet(amountToBet);
-        break;
-      case 'deal': //deals cards to everyone
-        this.deal();
-        break;
-      case 'player':
-        this.playerTurn(verb);
-        break;
-      case 'dealer':
-        this.dealerTurn();
-        break;
-      case 'payout':
-        this.payout();
-        break;
+    try {
+      //this will do whatever is next in the queue of operations based on current state and current player
+      // console.log('CURRENT STATE = ', this.currentState);
+      //sequence of events: https://bicycleca this.currentState = 'start';es a bet. todo: implement the betting. after all bets are complete, updates state to deal
+      //deal - will deal each player one card at a time, with dealer being last, until each player has two cards in hand. If the dealer has blackjack, anyone without black jack loses, update the state to payouts. Otherwise, Updates the state to player
+      //player action - can hit or stand. If they bust or stand, we end their player action. after all players are done, updates the state to dealer
+      //dealer action - hit or stand based on the rules. updates the state to payouts. 
+      //payouts end of round. 
+      switch (this.currentState) {
+        case 'start':
+          this.start();
+          break;
+        case 'bets': //places one bet at a time given the amount the bot/driver sent in
+          this.bet(amountToBet);
+          break;
+        case 'deal': //deals cards to everyone
+          this.deal();
+          break;
+        case 'player':
+          this.playerTurn(verb);
+          break;
+        case 'dealer':
+          this.dealerTurn();
+          break;
+        case 'payout':
+          this.payout();
+          break;
+      }
+      const minimizedDealer = {
+
+      }
+      return (minimizedDealer);
     }
-    return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
+    catch (error) {
+      return error.message;
+    }
   }
 }
 

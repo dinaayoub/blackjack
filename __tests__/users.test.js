@@ -12,8 +12,8 @@ const options = {
 const getPlayer = require('../source/middleware/join');
 const updatePlayer = require('../source/middleware/update');
 const Player = require('../source/player');
-const userData = new Player('3');
-userData.name = 'dina';
+const userData = new Player('5');
+userData.name = 'hello';
 
 describe('User Model Test', () => {
 
@@ -51,7 +51,7 @@ describe('User Model Test', () => {
   });
 
   it('Can update a player', async () => {
-    userData.name = 'tina';
+    userData.name = 'world';
     userData.bank += 100;
     var updatedPlayer = await updatePlayer(userData);
     expect(updatedPlayer.name).toEqual(userData.name);
