@@ -11,6 +11,7 @@ class Hand {
 
   addCard(card) {
     this.cards.push(card);
+    // console.log('HAND CARD =', card);
     this.totalHandCount();
   }
 

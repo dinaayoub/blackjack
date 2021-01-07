@@ -131,24 +131,26 @@ class Dealer {
   }
 
 
-
   hit() {
     //hit the given user with one more card from the shoe. 
-    this.round[this.currentPlayerIndex].addCard(this.shoe.getOneCard());
+    var card = this.shoe.getOneCard();
+    this.round[this.currentPlayerIndex].addCard(card);
   }
 
   stand() {
-    //the user does not want any other cards, and returns simply the hand.
+    //the user does not want any other cards.
+    //this.round[this.currentPlayerIndex].status = 'stand';
     if (this.currentPlayerIndex === this.round.length - 1) {
       this.currentPlayerIndex = 0;
     }
     else
       this.currentPlayerIndex++;
+
   }
 
   buyIn(player) {
-    console.log('low player', player);
-    console.log(`bank too low, reseting bank`);
+    // console.log('low player', player);
+    // console.log(`bank too low, reseting bank`);
     player.bank = 500;
   }
 
@@ -188,6 +190,7 @@ class Dealer {
             //player wins 
             hand.player.earnings += hand.bet * 2;
           } else if (hand.count === dealerCount) {
+            console.log('IN PUSH');
             //push, player gets their bet back
             hand.player.earnings += hand.bet;
             hand.player.currentPushes += 1;
@@ -196,8 +199,10 @@ class Dealer {
           }
           //otherwise player loses, do nothing
         }
+        console.log('earnings = ', hand.player.earnings);
         // update what the player bank is after earnings
         hand.player.bank += hand.player.earnings;
+        console.log('player\'s bank =', hand.player.bank);
         updatePlayer(hand.player);
       }
     });
@@ -205,47 +210,54 @@ class Dealer {
     this.currentState = 'start';
   }
 
-  player(verb) {
-    // TODO :insert logics that
-    // deals with one player at a time. prompting with actions available based on hand
-    this.round.forEach(hand => {
-      // if hit run hit, if stand run stand, if handcount over 21 bust if handcount === 21 status= blackjack
+  playerTurn(verb) {
+    //if (this.currentPlayerIndex)
+    var isDealerNext = (this.currentPlayerIndex === this.round.length - 2);
+    var hand = this.round[this.currentPlayerIndex];
+    if (verb === 'stand') {
+      this.stand();
+      hand.status = 'stand';
+    }
+    else if (verb === 'hit') {
+      this.hit();
       if (hand.count > 21) {
-        // this.hand.status = 'bust';
-        this.round[this.currentPlayerIndex].status = 'bust';
+        hand.status = 'bust';
         this.currentPlayerIndex++;
       } else if (hand.count === 21) {
-        this.hand.status = 'blackjack';
+        hand.status = 'blackjack';
         this.currentPlayerIndex++;
-      } else if (this.player.hit) {
-        this.hit();
-      } else if (this.player.stand) {
-        this.hand.status = 'stand';
-        this.stand();
+      } else {
+        hand.status = 'active';
       }
-    });
-
-    //once this player busts or stands, update current index 
-    if (this.currentPlayerIndex === this.round.length - 1)
+    }
+    if (isDealerNext && hand.status != 'active') {
       this.currentState = 'dealer';
-    else
-      this.currentPlayerIndex++;
+    }
   }
 
   dealerTurn() {
-    var houseCount = this.round[this.currentPlayerIndex].count;
+    console.log('dealer hand = ', this.round[this.round.length - 1]);
+    var houseCount = this.round[this.round.length - 1].count;
+    console.log('house count before while', houseCount);
     while (houseCount < 17) {
-      this.hit(this.currentPlayerIndex);
-      this.round[this.currentPlayerIndex].status = 'active';
+      this.hit();
+      houseCount = this.round[this.round.length - 1].count;
+      this.round[this.round.length - 1].status = 'active';
     }
-    if (houseCount <= 21) {
-      this.stand(this.currentPlayerIndex);
-      if (houseCount === 21) this.round[this.currentPlayerIndex].status = 'blackjack';
-      else this.round[this.currentPlayerIndex].status = 'stand';
+    console.log('house count after while', houseCount);
+    if (houseCount === 21) {
+      this.round[this.round.length - 1].status = 'blackjack';
+    }
+    else if (houseCount < 21) {
+      this.round[this.round.length - 1].status = 'stand';
     }
     else if (houseCount > 21) {
-      this.round[this.currentPlayerIndex].status = 'bust';
+      console.log('house count for bust = ', houseCount);
+      this.round[this.round.length - 1].status = 'bust';
+      console.log(this.round[this.round.length - 1]);
     }
+    this.stand();
+    //this.currentPlayerIndex = 0;
     this.currentState = 'payout';
   }
 
@@ -268,21 +280,16 @@ class Dealer {
       this.deal();
       break;
     case 'player':
-      this.player(verb);
+      this.playerTurn(verb);
       break;
     case 'dealer':
-      this.dealer();
+      this.dealerTurn();
       break;
     case 'payout':
       this.payout();
       break;
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
-    /* TODO: 
-      - [ ] how much money does a player start off with?
-      - [ ] save that info to the db in the player object
-      - [ ] command line or discord bot "driver" that drives the game. 
-    */
   }
 }
 
