@@ -60,4 +60,5 @@ describe('User Model Test', () => {
     expect(updatedPlayer.losses).toEqual(userData.currentLosses);
     expect(updatedPlayer.pushes).toEqual(userData.currentPushes);
   });
+
 })

@@ -131,10 +131,10 @@ class Dealer {
   }
 
 
-
   hit() {
     //hit the given user with one more card from the shoe. 
-    this.round[this.currentPlayerIndex].addCard(this.shoe.getOneCard());
+    var card = this.shoe.getOneCard();
+    this.round[this.currentPlayerIndex].addCard(card);
   }
 
   stand() {
@@ -232,20 +232,23 @@ class Dealer {
       this.currentPlayerIndex++;
   }
 
-  dealer() {
+  dealerTurn() {
     var houseCount = this.round[this.currentPlayerIndex].count;
     while (houseCount < 17) {
-      this.hit(this.currentPlayerIndex);
+      this.hit();
+      houseCount = this.round[this.currentPlayerIndex].count;
       this.round[this.currentPlayerIndex].status = 'active';
     }
-    if (houseCount <= 21) {
-      this.stand(this.currentPlayerIndex);
-      if (houseCount === 21) this.round[this.currentPlayerIndex].status = 'blackjack';
-      else this.round[this.currentPlayerIndex].status = 'stand';
+    if (houseCount === 21) {
+      this.round[this.currentPlayerIndex].status = 'blackjack';
+    }
+    else if (houseCount < 21) {
+      this.round[this.currentPlayerIndex].status = 'stand';
     }
     else if (houseCount > 21) {
       this.round[this.currentPlayerIndex].status = 'bust';
     }
+    this.stand();
     this.currentState = 'payout';
   }
 
@@ -278,11 +281,6 @@ class Dealer {
         break;
     }
     return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
-    /* TODO: 
-      - [ ] how much money does a player start off with?
-      - [ ] save that info to the db in the player object
-      - [ ] command line or discord bot "driver" that drives the game. 
-    */
   }
 }
 

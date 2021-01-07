@@ -7,11 +7,12 @@ const options = {
   useFindAndModify: false
 };
 const Dealer = require('../source/dealer');
-const updatePlayer = require('../source/middleware/update');
+//const updatePlayer = require('../source/middleware/update');
+const Card = require('../source/card');
 
 describe('Dealer Object', () => {
   var dealer = new Dealer();
-  var mockUpdate;
+  // var mockUpdate;
 
   beforeAll(async (done) => {
     // mockUpdate = jest.fn().mockImplementation(updatePlayer);
@@ -73,5 +74,46 @@ describe('Dealer Object', () => {
     expect(dealer.players[1].bank).toBe(300);
     //need to validate that the player is updated correctly in the db?
   });
+
+  it('Can deal a hand to each player', async () => {
+    await dealer.deal();
+    expect(dealer.round[0].cards.length).toEqual(2);
+    expect(dealer.round[1].cards.length).toEqual(2);
+    expect(dealer.round[2].cards.length).toEqual(2);
+  });
+
+  it('Can hit - add a card to the current Player\'s hand', () => {
+    dealer.hit();
+    expect(dealer.round[0].cards.length).toEqual(3);
+  });
+
+  it('Can stand - stop adding cards to the player\'s hand on hit', () => {
+    dealer.stand();
+    dealer.hit();
+    dealer.hit();
+    dealer.stand();
+    expect(dealer.round[0].cards.length).toEqual(3);
+    expect(dealer.round[1].cards.length).toEqual(4);
+    expect(dealer.round[2].cards.length).toEqual(2);
+  })
+
+  it('Can successfully have dealer follow the rules when it\'s their turn', async () => {
+    console.log('RANDOM dealer count = ', dealer.round[2].count);
+    if (dealer.round[2].count < 17) {
+      dealer.dealerTurn();
+      expect(dealer.round[2].cards.length).toBeGreaterThan(2);
+    } else if (dealer.round[2].count === 21) {
+      dealer.dealerTurn();
+      expect(dealer.round[2].status).toEqual('blackjack');
+    } else if (dealer.round[2].count >= 17 && dealer.round[2].count < 21) {
+      dealer.dealerTurn();
+      expect(dealer.round[2].status).toEqual('stand');
+    }
+    expect(dealer.currentState).toEqual('payout');
+  });
+
+  it('Can payout players correctly', () => {
+
+  })
 
 });

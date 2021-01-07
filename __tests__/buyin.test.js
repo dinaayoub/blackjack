@@ -1,5 +1,12 @@
 'use strict';
 const mongoose = require('mongoose');
+const options = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+};
+
 const Dealer = require('../source/dealer');
 
 
@@ -8,11 +15,7 @@ describe('buyin', () => {
 
   beforeAll(async (done) => {
     spy = jest.spyOn(dealer, 'buyIn').mockImplementation();
-    await mongoose.connect(global.__MONGO_URI__, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useUnifiedTopology: true,
-    }, (err) => {
+    await mongoose.connect(global.__MONGO_URI__, options, (err) => {
       if (err) {
         console.error(err);
         process.exit(1);
