@@ -10,7 +10,6 @@ const bot = new Client();
 
 const PREFIX = '!';
 
-
 // message.channel.send == global message to channel from bot
 
 // functions will be [ !function arg arg ]

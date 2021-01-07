@@ -14,51 +14,67 @@ router.post('/leave/:dealerID/:playerID', logger, leaveHandler);
 router.get('/game', logger, newGameHandler);
 
 function newGameHandler(req, res) {
-  console.log('in new game handler');
-  var dealer = { id: uuid(), dealer: new Dealer() };
-  dealers.push(dealer);
-  res.status(200).json(dealer);
+  var id = uuid();
+  const dealerObj = {
+    id,
+    dealer: new Dealer()
+  };
+  const minimizedDealer = getMinimizedDealer(dealerObj);
+  dealers.push(dealerObj);
+  res.status(200).json(minimizedDealer);
   console.log(dealers);
 }
 
 async function joinHandler(req, res) {
-  let dealer = getDealer(req).dealer;
-  let id = req.params.playerID;
-  // console.log('req.params.id = ', id);
-  await dealer.addPlayer(id);
-  console.log(dealer);
-  res.status(200).json(dealer.players[dealer.players.length - 1]);
+  let dealerContainer = getDealer(req);
+  console.log(dealerContainer);
+  let playerID = req.params.playerID;
+  await dealerContainer.dealer.addPlayer(playerID);
+  //console.log(dealer);
+  res.status(200).json(getMinimizedDealer(dealerContainer));
 }
 
 async function leaveHandler(req, res) {
-  let dealer = getDealer(req).dealer;
+  let dealerContainer = getDealer(req);
   let id = req.params.playerID;
-  dealer.removePlayer(id);
-  res.status(200).send(id);
+  await dealerContainer.dealer.removePlayer(id);
+  res.status(200).json(getMinimizedDealer(dealerContainer));
 }
 
 async function nextHandler(req, res) {
-  let dealer = getDealer(req).dealer;
-  let next = dealer.next();
-  res.status(200).json(next);
+  let dealerContainer = getDealer(req);
+  console.log(dealerContainer);
+  await dealerContainer.dealer.next();
+  res.status(200).json(getMinimizedDealer(dealerContainer));
 }
 
 async function nextVerbHandler(req, res) {
-  let dealer = getDealer(req).dealer;
+  let dealerContainer = getDealer(req);
   var verb = req.params.verb;
   //if the verb is bet, check if we also have an amount
   var amount = req.query.amount;
-  let next = dealer.next(verb, amount ? amount : null);
-  res.status(200).json(next);
+  await dealerContainer.dealer.next(verb, amount ? amount : null);
+  res.status(200).json(getMinimizedDealer(dealerContainer));
+}
+
+function getMinimizedDealer(dealerContainer) {
+  return {
+    id: dealerContainer.id,
+    dealer: {
+      currentState: dealerContainer.dealer.currentState,
+      currentPlayerIndex: dealerContainer.dealer.currentPlayerIndex,
+      players: dealerContainer.dealer.players,
+      round: dealerContainer.dealer.round
+    }
+  };
 }
 
 function getDealer(req) {
   var dealerID = req.params.dealerID;
-  var dealerContainer;
-  //regular next
-  dealerContainer = dealers.find((dealer) => {
+  var dealerContainer = dealers.find((dealer) => {
     return dealer.id === dealerID;
   })
   return dealerContainer;
 }
+
 module.exports = router;

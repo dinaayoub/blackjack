@@ -130,7 +130,6 @@ class Dealer {
     }
   }
 
-
   hit() {
     //hit the given user with one more card from the shoe. 
     var card = this.shoe.getOneCard();
@@ -145,7 +144,6 @@ class Dealer {
     }
     else
       this.currentPlayerIndex++;
-
   }
 
   buyIn(player) {
@@ -186,18 +184,20 @@ class Dealer {
           if (hand.count === 21) {
             //payout 1.5x for people who got 21
             hand.player.earnings += hand.bet * 2.5;
+            hand.player.currentWins++;
           } else if (hand.count > dealerCount) {
             //player wins 
             hand.player.earnings += hand.bet * 2;
+            hand.player.currentWins++;
           } else if (hand.count === dealerCount) {
-            console.log('IN PUSH');
+            // console.log('IN PUSH');
             //push, player gets their bet back
             hand.player.earnings += hand.bet;
             hand.player.currentPushes += 1;
           } else {
+            //player busted
             hand.player.currentLosses += 1;
           }
-          //otherwise player loses, do nothing
         }
         console.log('earnings = ', hand.player.earnings);
         // update what the player bank is after earnings
@@ -290,10 +290,17 @@ class Dealer {
           this.payout();
           break;
       }
-      const minimizedDealer = {
-
-      }
-      return (minimizedDealer);
+      // const minimizedDealer = {
+      //   //maxPlayers = this.maxPlayers ;
+      //   //this.minBet = minBets || minBet;
+      //   //this.maxBet = maxBets || maxBet;
+      //   //this.dealer = new Player('dealer');
+      //   currentState: this.currentState,
+      //   currentPlayerIndex: this.currentPlayerIndex,
+      //   players: this.players,
+      //   round: this.round
+      // }
+      // return (minimizedDealer);
     }
     catch (error) {
       return error.message;
