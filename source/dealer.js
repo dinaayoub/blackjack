@@ -140,7 +140,7 @@ class Dealer {
   stand() {
     //the user does not want any other cards.
     //this.round[this.currentPlayerIndex].status = 'stand';
-    if (this.currentPlayerIndex === this.round.length - 2) {
+    if (this.currentPlayerIndex === this.round.length - 1) {
       this.currentPlayerIndex = 0;
     }
     else
@@ -236,11 +236,12 @@ class Dealer {
   }
 
   dealerTurn() {
+    console.log('dealer hand = ', this.round[this.round.length - 1]);
     var houseCount = this.round[this.round.length - 1].count;
     console.log('house count before while', houseCount);
     while (houseCount < 17) {
       this.hit();
-      houseCount = this.round[this.currentPlayerIndex].count;
+      houseCount = this.round[this.round.length - 1].count;
       this.round[this.round.length - 1].status = 'active';
     }
     console.log('house count after while', houseCount);
@@ -251,11 +252,12 @@ class Dealer {
       this.round[this.round.length - 1].status = 'stand';
     }
     else if (houseCount > 21) {
-      // console.log('house count for bust = ', houseCount);
+      console.log('house count for bust = ', houseCount);
       this.round[this.round.length - 1].status = 'bust';
-      // console.log(this.round[this.currentPlayerIndex])
+      console.log(this.round[this.round.length - 1])
     }
-    this.currentPlayerIndex = 0;
+    this.stand();
+    //this.currentPlayerIndex = 0;
     this.currentState = 'payout';
   }
 

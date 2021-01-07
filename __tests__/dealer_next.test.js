@@ -15,12 +15,12 @@ describe('Dealer Object', () => {
     new Card('A', 'S'),
     new Card('A', 'S'),
     new Card('J', 'S'),
-    new Card('3', 'S'),
-    new Card('3', 'S'),
-    new Card('3', 'S'),
-    new Card('6', 'S'),
-    new Card('2', 'S'),
-    new Card('10', 'S'),
+    new Card(3, 'S'),
+    new Card(3, 'S'),
+    new Card(3, 'S'),
+    new Card(6, 'S'),
+    new Card(2, 'S'),
+    new Card(10, 'S'),
   ]
 
   async function removeAllCollections() {
@@ -87,14 +87,14 @@ describe('Dealer Object', () => {
     expect(dealer.round[1].cards.length).toEqual(2);
     expect(dealer.round[1].count).toEqual(14);
     expect(dealer.round[1].status).toEqual('stand');
-    console.log('PLAYER 2 HAND', dealer.round[1].cards);
-    console.log('current state after player 2 is done (should be dealer) is = ', dealer.currentState);
+    // console.log('PLAYER 2 HAND', dealer.round[1].cards);
+    // console.log('current state after player 2 is done (should be dealer) is = ', dealer.currentState);
   });
 
   it('Can have dealer hit when their hand total is < 17', async () => {
     await dealer.next();
-    console.log('DEALER HAND', dealer.round[2].cards);
-    //expect(dealer.round[2].cards.length).toBe(4);
+    // console.log('DEALER HAND', dealer.round[2].cards);
+    expect(dealer.round[2].cards.length).toBe(4);
   });
 
   // it('Can have dealer stand when their hand total is >= 17 & <21', async () => {
