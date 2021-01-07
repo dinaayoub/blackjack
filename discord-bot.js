@@ -14,6 +14,20 @@ const PREFIX = '!';
 
 // functions will be [ !function arg arg ]
 
+const MONGODB_URI = process.env.MONGODB_URI;
+
+const mongoose = require('mongoose');
+const options = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+};
+
+mongoose.connect(MONGODB_URI, options);
+
+
+
 bot.on('ready', () =>{
   console.log(`${bot.user.tag}`);
 });
@@ -28,12 +42,24 @@ bot.on('message', (message) =>{
       .split(/\s+/);
     if(cmdName === 'start'){
       dealer.start();
-      message.channel.send(`Welcome ${dealer.players}`);
-
+      console.log('dealer.players = ', dealer.players);
+      let names = dealer.players.map(players => players.name);
+      let id = dealer.players.map(player => player.id);
+      message.channel.send(`Welcome ${names} `);
+      message.channel.send('Round starting...');
+      id.forEach(id => message.member.id);
     }
     if(cmdName === 'join'){
-      dealer.addPlayer(message.author);
+      console.log(message.author);
+      let name = message.author.username;
+      dealer.addPlayer(message.author.id, name);
       message.reply(`welcome ${message.author} to the Table`);
+    }
+    if(cmdName === 'bet') {
+      if(args.length === 0){message.reply('place at least min bet');}
+
+      dealer.bet(args[1]);
+      message.reply(`${args[1]} bet placed`);
     }
     if(cmdName === 'hit'){
       dealer.hit();
@@ -53,12 +79,7 @@ bot.on('message', (message) =>{
       dealer.removePlayer(message.author);
       message.channel.send(`${message.author} left the game`);
     }
-    if(cmdName === 'bet'){
-      if(args.length === 0){message.reply('place at least min bet');}
 
-      dealer.bet(args[1]);
-      message.reply(`${args[1]} bet placed`);
-    }
     
     // TODO: add any other commands
   }
@@ -74,3 +95,5 @@ bot.on('message', (message) =>{
 });
 
 bot.login(process.env.BOT_TOKEN);
+
+module.exports = bot;

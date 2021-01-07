@@ -9,17 +9,27 @@ const Users = require('../schema/user.schema');
 
 // get an existing player record 
 async function getPlayer(player) {
-  // console.log('PLAYER = ', player);
-  let record = await Users.findOne({ userid: player.userID });
-  // console.log('RETURNED RECORD = ', record);
-
-  // checks if user already exists in db 
-  if (!record) {
-    // if not we will call addNewPlayer to the db
-    record = await addNewPlayer(player);
-    // console.log('added RECORD = ', record);
+  // console.log('ADD-PLAYER = ', player);
+  // console.log('PLAYER ID = ', player.userID);
+  let record;
+  let exists = false;
+  try {
+    console.log('exists set', exists);
+    exists = await Users.exists({userid: player.userID});
+    console.log('exists returns ', exists);
+    if(exists) {
+      record = await Users.findOne({ userid: player.userID });
+      console.log('record = ', record);
+    }
+    // checks if user already exists in db 
+    else {
+      // if not we will call addNewPlayer to the db
+      record = await addNewPlayer(player);
+      // console.log('added RECORD = ', record);
+    }
+  } catch (e) {
+    console.error(e);
   }
-
   return record; // this might not return in a proper format
 }
 

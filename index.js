@@ -8,17 +8,7 @@ const routes = require('./source/routes/routes');
 app.use(routes);
 
 const PORT = process.env.PORT;
-const MONGODB_URI = process.env.MONGODB_URI;
 
-const mongoose = require('mongoose');
-const options = {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false
-};
-
-mongoose.connect(MONGODB_URI, options);
 
 
 const server = require('./source/server/server');

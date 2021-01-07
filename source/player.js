@@ -1,9 +1,9 @@
 'use strict';
 
 class Player {
-  constructor(userID) {
+  constructor(userID, name) {
     this.userID = userID;
-    this.name = '';
+    this.name = name;
     this.bank = 500;
     this.earnings = 0;
     this.currentWins = 0;
