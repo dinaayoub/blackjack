@@ -1,37 +1,34 @@
 'use strict';
 
 //test the database operations
-const mongoose = require('mongoose');
-const options = {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false
-};
 
 const getPlayer = require('../source/middleware/join');
 const updatePlayer = require('../source/middleware/update');
 const Player = require('../source/player');
-const userData = new Player('3');
+const mongoose = require('mongoose');
+
+const userData = new Player('1');
 userData.name = 'dina';
 
 describe('User Model Test', () => {
 
   // It's just so easy to connect to the MongoDB Memory Server 
   // By using mongoose.connect
-  beforeAll(async (done) => {
-    await mongoose.connect(global.__MONGO_URI__, options, (err) => {
+  beforeAll(async () => {
+    await mongoose.connect(global.__MONGO_URI__, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+    }, (err) => {
       if (err) {
         console.error(err);
         process.exit(1);
       }
     });
-    done();
   });
 
-  afterAll((done) => {
+  afterAll(() => {
     mongoose.connection.close();
-    done();
   });
 
   it('Can create & save a new user successfully', async () => {
@@ -60,4 +57,4 @@ describe('User Model Test', () => {
     expect(updatedPlayer.losses).toEqual(userData.currentLosses);
     expect(updatedPlayer.pushes).toEqual(userData.currentPushes);
   });
-})
+});
