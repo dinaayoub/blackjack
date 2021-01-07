@@ -2,48 +2,63 @@
 
 const express = require('express');
 const router = express.Router();
-
+const uuid = require('uuid').v4;
 const Dealer = require('../dealer');
-const dealer = new Dealer();
+const dealers = [];
+const logger = require('../middleware/logger');
 
-router.get('/deal', dealHandler);
-router.get('/hit/:id', hitHandler);
-router.get('/stand', standHandler);
-router.get('/next', nextHandler);
+router.get('/next/:dealerID', logger, nextHandler);
+router.get('/next/:dealerID/:verb', logger, nextVerbHandler);
+router.post('/join/:dealerID/:playerID', logger, joinHandler);
+router.post('/leave/:dealerID/:playerID', logger, leaveHandler);
+router.get('/game', logger, newGameHandler);
 
-function dealHandler(req, res) {
-  //   console.log('params', req.params, 'body', req.body);
-  //   let obj = req.body;
-  let deal = dealer.deal();
-  res.status(200).json(deal);
+function newGameHandler(req, res) {
+  console.log('in new game handler');
+  var dealer = { id: uuid(), dealer: new Dealer() };
+  dealers.push(dealer);
+  res.status(200).json(dealer);
+  console.log(dealers);
 }
 
-function hitHandler(req, res) {
-  //get
-  // this will give the player one card
-  console.log(req.params.id);
-  let id = req.params.id;
-  let hit = dealer.hit(id);
-  res.status(200).json(hit);
-}
-
-function standHandler(req, res) {
-  //get
-  //this will have the player stop receiving cards
-  // req.body.id or req.params.id
-  let id = req.body.userID;
-  let stand = dealer.stand(id);
-  res.status(200).json(stand);
-}
-
-function nextHandler(req, res) {
-  // get (currently)
-  // awaiting additional information from the dealer.js page
-  //   let obj = req.body;
-  console.log('inside the next function');
+async function joinHandler(req, res) {
+  let dealer = getDealer(req).dealer;
+  let id = req.params.playerID;
+  // console.log('req.params.id = ', id);
+  await dealer.addPlayer(id);
   console.log(dealer);
-  let next = dealer.next();
-  res.status(200).send(next);
+  res.status(200).json(dealer.players[dealer.players.length - 1]);
 }
 
+async function leaveHandler(req, res) {
+  let dealer = getDealer(req).dealer;
+  let id = req.params.playerID;
+  dealer.removePlayer(id);
+  res.status(200).send(id);
+}
+
+async function nextHandler(req, res) {
+  let dealer = getDealer(req).dealer;
+  let next = dealer.next();
+  res.status(200).json(next);
+}
+
+async function nextVerbHandler(req, res) {
+  let dealer = getDealer(req).dealer;
+  var verb = req.params.verb;
+  //if the verb is bet, check if we also have an amount
+  var amount = req.query.amount;
+  let next = dealer.next(verb, amount ? amount : null);
+  res.status(200).json(next);
+}
+
+function getDealer(req) {
+  var dealerID = req.params.dealerID;
+  var dealerContainer;
+  //regular next
+  dealerContainer = dealers.find((dealer) => {
+    return dealer.id === dealerID;
+  })
+  return dealerContainer;
+}
 module.exports = router;
