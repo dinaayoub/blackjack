@@ -11,13 +11,15 @@ const Users = require('../schema/user.schema');
 async function getPlayer(player) {
   // console.log('PLAYER = ', player);
   let record = await Users.findOne({ userid: player.userID });
+  // console.log('RETURNED RECORD = ', record);
+
   // checks if user already exists in db 
   if (!record) {
     // if not we will call addNewPlayer to the db
     record = await addNewPlayer(player);
     // console.log('added RECORD = ', record);
   }
-  // console.log('RECORD = ', record);
+
   return record; // this might not return in a proper format
 }
 
