@@ -5,8 +5,8 @@ const Player = require('./player');
 const Hand = require('./hand');
 
 // db functions 
-const updatePlayer = require('./db/update');
-const getPlayer = require('./db/join');
+const updatePlayer = require('./database-operations/update');
+const getPlayer = require('./database-operations/join');
 
 var numberOfDecks = 6; //this should be changeable
 var maxPlayers = 7;

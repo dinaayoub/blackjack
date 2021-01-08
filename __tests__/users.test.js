@@ -9,8 +9,8 @@ const options = {
   useFindAndModify: false
 };
 
-const getPlayer = require('../source/db/join');
-const updatePlayer = require('../source/db/update');
+const getPlayer = require('../source/database-operations/join');
+const updatePlayer = require('../source/database-operations/update');
 const Player = require('../source/player');
 const userData = new Player('5');
 userData.name = 'hello';
