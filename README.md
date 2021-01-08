@@ -51,11 +51,11 @@
 * begin the actual game 'https://latte-blackjack.herokuapp.com/next/{dealerid}'
 * each player sets a bet in a query string (repeat for all players): 'https://latte-blackjack.herokuapp.com/next/{dealerid}/bets?amount={amount-between-5-and-50}'
 * deal the cards: 'https://latte-blackjack.herokuapp.com/next/{dealerid}'
-* allow the player to hit or stand (until the player chooses stand or the player busts/gets 21): 'https://latte-blackjack.herokuapp.com/next/{dealerid}/{hit or stand}'
+* allow the player to hit or stand (until the player chooses stand or the player busts/gets 21): 'https://latte-blackjack.herokuapp.com/next/{dealerid}/{hit-or-stand}'
 * when all players have reached stand/bust/blackjack, move to dealer turn: 'https://latte-blackjack.herokuapp.com/next/{dealerid}'
 * dealer turn will automatically hit if total is under 17, or stand if 17 or over. Dealer could also bust. 'https://latte-blackjack.herokuapp.com/next/{dealerid}'
 * players will get paid out for their winnings (if the player won or pushed). Banks will be updated, win/loss/push totals will be updated: 'https://latte-blackjack.herokuapp.com/next/{dealerid}'
-* if a player wishes to leave the game, they must type this before the next round begins: 'https://latte-blackjack.herokuapp.com/leave/{dealerid}/{playerid}
+* if a player wishes to leave the game, they must type this before the next round begins: 'https://latte-blackjack.herokuapp.com/leave/{dealerid}/{playerid}'
 * next round will start with: 'https://latte-blackjack.herokuapp.com/next/{dealerid}'
 
 ## Tests
