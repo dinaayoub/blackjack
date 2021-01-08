@@ -106,7 +106,7 @@ describe('Dealer Object', () => {
     expect(dealer.round[0].cards.length).toEqual(3);
   });
 
-  it('Can playerturn stand - stop adding cards to the player\'s hand on hit', () => {
+  it('Can playerturn stand - stop adding cards to the player\'s hand on stand', () => {
     dealer.currentPlayerIndex = 1;
     dealer.playerTurn('stand');
     expect(dealer.round[1].cards.length).toEqual(2);
