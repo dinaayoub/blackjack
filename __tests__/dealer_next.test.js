@@ -81,7 +81,7 @@ describe('Dealer Object', () => {
     expect(dealer.round[0].count).toEqual(20);
   });
 
-  it('Can playerturn stand after each player\'s turn - stop adding cards to the player\'s hand on hit', () => {
+  it('Can playerturn stand after each player\'s turn - stop adding cards to the player\'s hand on stand', () => {
     //player 1 will want to stand as their total is 20
     dealer.next('stand');
     expect(dealer.round[0].status).toEqual('stand');

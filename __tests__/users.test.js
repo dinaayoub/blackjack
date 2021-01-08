@@ -34,7 +34,7 @@ describe('User Model Test', () => {
     done();
   });
 
-  it('Can create & save a new user successfully', async () => {
+  it('Can create & save a new user', async () => {
     var user = await getPlayer(userData);
     expect(user.userid).toEqual(userData.userID);
     // Object Id should be defined when successfully saved to MongoDB.
@@ -43,7 +43,7 @@ describe('User Model Test', () => {
     expect(user.name).toBe(userData.name);
   });
 
-  it('Can retrieve an existing user successfully', async () => {
+  it('Can retrieve an existing user', async () => {
     var existingUser = await getPlayer(userData);
     expect(existingUser.userid).toEqual(userData.userID);
   });
