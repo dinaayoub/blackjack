@@ -22,15 +22,12 @@ function newGameHandler(req, res) {
   const minimizedDealer = getMinimizedDealer(dealerObj);
   dealers.push(dealerObj);
   res.status(200).json(minimizedDealer);
-  console.log(dealers);
 }
 
 async function joinHandler(req, res) {
   let dealerContainer = getDealer(req);
-  console.log(dealerContainer);
   let playerID = req.params.playerID;
   await dealerContainer.dealer.addPlayer(playerID);
-  //console.log(dealer);
   res.status(200).json(getMinimizedDealer(dealerContainer));
 }
 
@@ -43,7 +40,6 @@ async function leaveHandler(req, res) {
 
 async function nextHandler(req, res) {
   let dealerContainer = getDealer(req);
-  console.log(dealerContainer);
   await dealerContainer.dealer.next();
   res.status(200).json(getMinimizedDealer(dealerContainer));
 }

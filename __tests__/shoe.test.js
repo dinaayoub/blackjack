@@ -31,13 +31,11 @@ describe('Shoe object', () => {
   });
   it('should shuffle when <20% of the deck remains', () => {
     const shoe = new Shoe(1);
-    // console.log(shoe.shoe.length);
     for (let i = 0; i < 41; i++) {
       shoe.getOneCard();
     }
     shoe.getOneCard();
     shoe.getOneCard();
-    // console.log(shoe.shoe.length);
     expect(shoe.shoe.length).toEqual(51);
   });
 });

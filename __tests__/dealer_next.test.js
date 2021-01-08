@@ -60,12 +60,8 @@ describe('Dealer Object', () => {
   });
 
   it('Can place bets for all non-dealers players', async () => {
-    // console.log('PLayer 1 bet', dealer.round[0].bet);
-    // console.log('PLayer 2 bet', dealer.round[1].bet);
     dealer.next('bet', 25);
-    // console.log('Updated PLayer 1 bet', dealer.round[0].bet);
     dealer.next('bet', 50);
-    // console.log('Updated PLayer 2 bet', dealer.round[1].bet);
     expect(dealer.round[0].bet).toStrictEqual(25);
     expect(dealer.round[1].bet).toStrictEqual(50);
     expect(dealer.round[2].bet).toStrictEqual(0); //dealer's bet should always be 0
@@ -74,7 +70,6 @@ describe('Dealer Object', () => {
 
   it('Can deal a hand to each player', async () => {
     await dealer.next();
-    // dealer.round.forEach(round => console.log(round.cards));
     expect(dealer.round[0].cards.length).toEqual(2);
     expect(dealer.round[1].cards.length).toEqual(2);
     expect(dealer.round[2].cards.length).toEqual(2);
@@ -99,14 +94,10 @@ describe('Dealer Object', () => {
     expect(dealer.round[1].cards.length).toEqual(2);
     expect(dealer.round[1].count).toEqual(14);
     expect(dealer.currentPlayerIndex).toEqual(2);
-    // dealer.round.forEach(round => console.log(round.cards));
-    // console.log('PLAYER 2 HAND', dealer.round[1].cards);
-    // console.log('current state after player 2 is done (should be dealer) is = ', dealer.currentState);
   });
 
   it('Can have dealer hit when their hand total is < 17', async () => {
     await dealer.next();
-    // console.log('DEALER HAND', dealer.round[2].cards);
     expect(dealer.round[2].cards.length).toBe(4);
   });
 
@@ -115,7 +106,6 @@ describe('Dealer Object', () => {
     dealer.currentState = 'dealer';
     dealer.currentPlayerIndex += 2;
 
-    // console.log(dealer.currentPlayerIndex);
     dealer.round[2].cards.splice(1, 2);
     dealer.round[2].totalHandCount();
     dealer.next();

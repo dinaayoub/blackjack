@@ -9,8 +9,8 @@ const options = {
   useFindAndModify: false
 };
 
-const getPlayer = require('../source/middleware/join');
-const updatePlayer = require('../source/middleware/update');
+const getPlayer = require('../source/db/join');
+const updatePlayer = require('../source/db/update');
 const Player = require('../source/player');
 const userData = new Player('5');
 userData.name = 'hello';
@@ -36,7 +36,6 @@ describe('User Model Test', () => {
 
   it('Can create & save a new user successfully', async () => {
     var user = await getPlayer(userData);
-    // console.log(user);
     expect(user.userid).toEqual(userData.userID);
     // Object Id should be defined when successfully saved to MongoDB.
     expect(user._id).toBeDefined();
@@ -46,7 +45,6 @@ describe('User Model Test', () => {
 
   it('Can retrieve an existing user successfully', async () => {
     var existingUser = await getPlayer(userData);
-    // console.log(existingUser);
     expect(existingUser.userid).toEqual(userData.userID);
   });
 
