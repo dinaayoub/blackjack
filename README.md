@@ -47,7 +47,7 @@
 
 * take Heroku deployment link 'https://latte-blackjack.herokuapp.com' and add the following:
 * "/game" to start the game. Take the dealer ID provided, and use in the following commands
-* add a player (or multiple players if preferred): 'https://latte-blackjack.herokuapp.com/join/{dealerid}/ {userid}'
+* add a player (or multiple players if preferred): 'https://latte-blackjack.herokuapp.com/join/ {dealerid}/{userid}'
 * begin the actual game 'https://latte-blackjack.herokuapp.com/next/ {dealerid}'
 * each player sets a bet in a query string (repeat for all players): 'https://latte-blackjack.herokuapp.com/next/ {dealerid}/bets?amount={amount between 5 and 50}'
 * deal the cards: 'https://latte-blackjack.herokuapp.com/next/ {dealerid}'
