@@ -75,7 +75,7 @@ class Dealer {
 
   bet(amount) {
     //check that the amount is >min and <max
-    if (amount < this.minBet || amount > this.maxBet) throw new Error(`Invalid amount. Please bet something between ${this.minBet} and ${this.maxBet}`)
+    if (amount < this.minBet || amount > this.maxBet) throw new Error(`Invalid amount. Please bet something between ${this.minBet} and ${this.maxBet}`);
 
     //find the hand associated with the current player by the index we are keepign track of
     var currentPlayerHand = this.round[this.currentPlayerIndex];
@@ -140,8 +140,9 @@ class Dealer {
     if (this.currentPlayerIndex === this.round.length - 1) {
       this.currentPlayerIndex = 0;
     }
-    else
+    else {
       this.currentPlayerIndex++;
+    }
   }
 
   buyIn(player) {
@@ -258,24 +259,24 @@ class Dealer {
       //dealer action - hit or stand based on the rules. updates the state to payouts. 
       //payouts end of round. 
       switch (this.currentState) {
-        case 'start':
-          this.start();
-          break;
-        case 'bets': //places one bet at a time given the amount the bot/driver sent in
-          this.bet(amountToBet);
-          break;
-        case 'deal': //deals cards to everyone
-          this.deal();
-          break;
-        case 'player':
-          this.playerTurn(verb);
-          break;
-        case 'dealer':
-          this.dealerTurn();
-          break;
-        case 'payout':
-          this.payout();
-          break;
+      case 'start':
+        this.start();
+        break;
+      case 'bets': //places one bet at a time given the amount the bot/driver sent in
+        this.bet(amountToBet);
+        break;
+      case 'deal': //deals cards to everyone
+        this.deal();
+        break;
+      case 'player':
+        this.playerTurn(verb);
+        break;
+      case 'dealer':
+        this.dealerTurn();
+        break;
+      case 'payout':
+        this.payout();
+        break;
       }
     }
     catch (error) {
