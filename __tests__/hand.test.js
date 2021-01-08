@@ -74,7 +74,7 @@ describe('Handcount Object', () => {
   });
 });
 
-describe('Handcount Object doubble ace', () => {
+describe('Can get the count of a hand with two aces', () => {
   var player = new Player('23457');
   player.name = 'Bob';
   player.bank = 350;
@@ -84,7 +84,7 @@ describe('Handcount Object doubble ace', () => {
   var card3 = new Card('7', 'H');
 
 
-  it('properly counts 2 aces and a card', () => {
+  it('Can get the count of a hand with two aces and a card', () => {
     hand.addCard(card);
     hand.addCard(card2);
     hand.addCard(card3);
