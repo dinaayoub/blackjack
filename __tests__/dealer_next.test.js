@@ -12,12 +12,12 @@ const Card = require('../source/card');
 describe('Dealer Object', () => {
   var dealer = new Dealer();
   dealer.shoe.shoe = [
-    new Card('A', 'S'),
-    new Card('A', 'S'),
-    new Card('J', 'S'),
-    new Card(3, 'S'),
-    new Card(3, 'S'),
-    new Card(3, 'S'),
+    new Card('Q', 'H'),
+    new Card('Q', 'H'),
+    new Card('Q', 'H'),
+    new Card(4, 'S'),
+    new Card(4, 'S'),
+    new Card(4, 'S'),
     new Card(6, 'S'),
     new Card(2, 'S'),
     new Card(10, 'S'),
@@ -51,8 +51,8 @@ describe('Dealer Object', () => {
 
 
   it('Can start a game using the next function', async () => {
-    await dealer.addPlayer('1');
-    await dealer.addPlayer('2');
+    await dealer.addPlayer('10');
+    await dealer.addPlayer('20');
     dealer.next();
     expect(dealer.round.length).toEqual(3);
     expect(dealer.currentState).toEqual('bets');
@@ -77,44 +77,50 @@ describe('Dealer Object', () => {
 
   it('Can playerturn hit - add a card to the current Player\'s hand', () => {
     dealer.next('hit');
-    dealer.next('stand');
     expect(dealer.round[0].cards.length).toEqual(3);
-    console.log('PLAYER 1 HAND', dealer.round[0].cards);
+    expect(dealer.round[0].count).toEqual(20);
   });
 
-  it('Can playerturn stand - stop adding cards to the player\'s hand on hit', () => {
+  it('Can playerturn stand after each player\'s turn - stop adding cards to the player\'s hand on hit', () => {
+    //player 1 will want to stand as their total is 20
     dealer.next('stand');
+    expect(dealer.round[0].status).toEqual('stand');
+    expect(dealer.round[0].cards.length).toEqual(3);
+    expect(dealer.currentPlayerIndex).toEqual(1);
+
+    //player 2 now chooses to stand, their total will remain 14
+    dealer.next('stand');
+    expect(dealer.round[1].status).toEqual('stand');
     expect(dealer.round[1].cards.length).toEqual(2);
     expect(dealer.round[1].count).toEqual(14);
-    expect(dealer.round[1].status).toEqual('stand');
-    // console.log('PLAYER 2 HAND', dealer.round[1].cards);
-    // console.log('current state after player 2 is done (should be dealer) is = ', dealer.currentState);
+    expect(dealer.currentPlayerIndex).toEqual(2);
   });
 
   it('Can have dealer hit when their hand total is < 17', async () => {
     await dealer.next();
-    // console.log('DEALER HAND', dealer.round[2].cards);
     expect(dealer.round[2].cards.length).toBe(4);
   });
 
-  // it('Can have dealer stand when their hand total is >= 17 & <21', async () => {
-  //   dealer.currentPlayerIndex += 2;
-  //   // console.log(dealer.currentPlayerIndex);
-  //   dealer.round[2].cards.splice(1, 2);
-  //   dealer.round[2].totalHandCount();
-  //   dealer.next();
-  //   expect(dealer.round[2].cards.length).toBe(2);
-  //   expect(dealer.round[2].status).toEqual('stand');
-  // });
+  it('Can have dealer stand when their hand total is >= 17 & <21', async () => {
+    //artificially resetting to dealer turn
+    dealer.currentState = 'dealer';
+    dealer.currentPlayerIndex += 2;
 
-  // it('Can payout players correctly when dealer stands >=17 & <21', () => {
-  //   //dealer total is 20
-  //   //player 1 will have 20 (A + 3 + 6)
-  //   //player 2 will have 14 (A + 3)
-  //   console.log('player 1 bank = ', dealer.players[1].bank);
-  //   console.log('player 2 bank = ', dealer.players[0].bank);
-  //   dealer.next();
-  //   expect(dealer.round[0].player.bank).toEqual(325);
-  //   expect(dealer.round[1].player.bank).toEqual(450);
-  // });
+    dealer.round[2].cards.splice(1, 2);
+    dealer.round[2].totalHandCount();
+    dealer.next();
+    expect(dealer.round[2].cards.length).toBe(2);
+    expect(dealer.round[2].status).toEqual('stand');
+    expect(dealer.round[2].count).toBe(20);
+    expect(dealer.currentState).toEqual('payout');
+  });
+
+  it('Can payout players correctly when dealer stands >=17 & <21', () => {
+    //dealer total is now 20 instead of bust
+    dealer.next();
+    //player 1 will have 20 (Q + 4 + 6) which is a push
+    expect(dealer.round[0].player.bank).toEqual(500);
+    //player 2 will have 14 (Q + 4) so they have lost
+    expect(dealer.round[1].player.bank).toEqual(450);
+  });
 });

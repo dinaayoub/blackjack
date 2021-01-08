@@ -5,8 +5,8 @@ const Player = require('./player');
 const Hand = require('./hand');
 
 // db functions 
-const updatePlayer = require('./middleware/update');
-const getPlayer = require('./middleware/join');
+const updatePlayer = require('./database-operations/update');
+const getPlayer = require('./database-operations/join');
 
 var numberOfDecks = 6; //this should be changeable
 var maxPlayers = 7;
@@ -62,9 +62,7 @@ class Dealer {
     this.round = [];
     if (this.players.length === 0) throw new Error('No players in the game');
     this.players.forEach(async (player) => {
-      // console.log('player in start posistion', player);
       if (player.bank < minBet) {
-        // console.log('buyin log');
         await this.buyIn(player);
       }
       this.round.push(new Hand(player));
@@ -130,7 +128,6 @@ class Dealer {
     }
   }
 
-
   hit() {
     //hit the given user with one more card from the shoe. 
     var card = this.shoe.getOneCard();
@@ -139,7 +136,7 @@ class Dealer {
 
   stand() {
     //the user does not want any other cards.
-    //this.round[this.currentPlayerIndex].status = 'stand';
+    // if the current player is the dealer, reset to the beginning as the "next" player is the first player
     if (this.currentPlayerIndex === this.round.length - 1) {
       this.currentPlayerIndex = 0;
     }
@@ -149,8 +146,6 @@ class Dealer {
   }
 
   buyIn(player) {
-    // console.log('low player', player);
-    // console.log(`bank too low, reseting bank`);
     player.bank = 500;
   }
 
@@ -176,7 +171,7 @@ class Dealer {
           //the dealer has blackjack, "push" any players who also have blackjack, and everyone else loses. 
           if (hand.count === 21) {
             //push (tie) for people who got 21, just give them back their bet
-            hand.player.earnings += hand.bet;
+            hand.player.earnings += hand.bet * 1;
             hand.player.currentPushes += 1;
           } else {
             hand.player.currentLosses += 1;
@@ -186,23 +181,22 @@ class Dealer {
           if (hand.count === 21) {
             //payout 1.5x for people who got 21
             hand.player.earnings += hand.bet * 2.5;
-          } else if (hand.count > dealerCount) {
+            hand.player.currentWins++;
+          } else if (hand.count < 21 && hand.count > dealerCount) {
             //player wins 
             hand.player.earnings += hand.bet * 2;
+            hand.player.currentWins++;
           } else if (hand.count === dealerCount) {
-            console.log('IN PUSH');
             //push, player gets their bet back
-            hand.player.earnings += hand.bet;
+            hand.player.earnings += hand.bet * 1;
             hand.player.currentPushes += 1;
           } else {
+            //player busted
             hand.player.currentLosses += 1;
           }
-          //otherwise player loses, do nothing
         }
-        console.log('earnings = ', hand.player.earnings);
         // update what the player bank is after earnings
         hand.player.bank += hand.player.earnings;
-        console.log('player\'s bank =', hand.player.bank);
         updatePlayer(hand.player);
       }
     });
@@ -236,15 +230,12 @@ class Dealer {
   }
 
   dealerTurn() {
-    console.log('dealer hand = ', this.round[this.round.length - 1]);
     var houseCount = this.round[this.round.length - 1].count;
-    console.log('house count before while', houseCount);
     while (houseCount < 17) {
       this.hit();
       houseCount = this.round[this.round.length - 1].count;
       this.round[this.round.length - 1].status = 'active';
     }
-    console.log('house count after while', houseCount);
     if (houseCount === 21) {
       this.round[this.round.length - 1].status = 'blackjack';
     }
@@ -252,9 +243,7 @@ class Dealer {
       this.round[this.round.length - 1].status = 'stand';
     }
     else if (houseCount > 21) {
-      console.log('house count for bust = ', houseCount);
       this.round[this.round.length - 1].status = 'bust';
-      console.log(this.round[this.round.length - 1]);
     }
     this.stand();
     //this.currentPlayerIndex = 0;
@@ -262,34 +251,37 @@ class Dealer {
   }
 
   next(verb, amountToBet) {
-    //this will do whatever is next in the queue of operations based on current state and current player
-    console.log('CURRENT STATE = ', this.currentState);
-    //sequence of events: https://bicycleca this.currentState = 'start';es a bet. todo: implement the betting. after all bets are complete, updates state to deal
-    //deal - will deal each player one card at a time, with dealer being last, until each player has two cards in hand. If the dealer has blackjack, anyone without black jack loses, update the state to payouts. Otherwise, Updates the state to player
-    //player action - can hit or stand. If they bust or stand, we end their player action. after all players are done, updates the state to dealer
-    //dealer action - hit or stand based on the rules. updates the state to payouts. 
-    //payouts end of round. 
-    switch (this.currentState) {
-    case 'start':
-      this.start();
-      break;
-    case 'bets': //places one bet at a time given the amount the bot/driver sent in
-      this.bet(amountToBet);
-      break;
-    case 'deal': //deals cards to everyone
-      this.deal();
-      break;
-    case 'player':
-      this.playerTurn(verb);
-      break;
-    case 'dealer':
-      this.dealerTurn();
-      break;
-    case 'payout':
-      this.payout();
-      break;
+    try {
+      //this will do whatever is next in the queue of operations based on current state and current player
+      //sequence of events: https://bicycleca this.currentState = 'start';es a bet. todo: implement the betting. after all bets are complete, updates state to deal
+      //deal - will deal each player one card at a time, with dealer being last, until each player has two cards in hand. If the dealer has blackjack, anyone without black jack loses, update the state to payouts. Otherwise, Updates the state to player
+      //player action - can hit or stand. If they bust or stand, we end their player action. after all players are done, updates the state to dealer
+      //dealer action - hit or stand based on the rules. updates the state to payouts. 
+      //payouts end of round. 
+      switch (this.currentState) {
+      case 'start':
+        this.start();
+        break;
+      case 'bets': //places one bet at a time given the amount the bot/driver sent in
+        this.bet(amountToBet);
+        break;
+      case 'deal': //deals cards to everyone
+        this.deal();
+        break;
+      case 'player':
+        this.playerTurn(verb);
+        break;
+      case 'dealer':
+        this.dealerTurn();
+        break;
+      case 'payout':
+        this.payout();
+        break;
+      }
     }
-    return ({ currentState: this.currentState, currentPlayerIndex: this.currentPlayerIndex });
+    catch (error) {
+      return error.message;
+    }
   }
 }
 

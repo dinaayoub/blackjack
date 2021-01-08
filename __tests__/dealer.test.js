@@ -7,7 +7,6 @@ const options = {
   useFindAndModify: false
 };
 const Dealer = require('../source/dealer');
-//const updatePlayer = require('../source/middleware/update');
 const Card = require('../source/card');
 
 describe('Dealer Object', () => {
@@ -86,14 +85,12 @@ describe('Dealer Object', () => {
   });
 
   it('Can remove a player from the game for next round', async () => {
-    console.log('player 1 bank = ', dealer.players[0].bank);
     dealer.players[0].bank = 300;
     await dealer.removePlayer('1');
     expect(dealer.players.length).toBe(1);
     await dealer.addPlayer('1');
     //when you remove the player and re-add them their new index becomes 1 instead of 0
     expect(dealer.players[1].bank).toBe(300);
-    console.log('player 1 bank = ', dealer.players[0].bank);
     //need to validate that the player is updated correctly in the db?
   });
 
@@ -119,7 +116,6 @@ describe('Dealer Object', () => {
 
   it('Can have dealer hit when their hand total is < 17', async () => {
     dealer.dealerTurn();
-    // console.log(dealer.round[2].cards);
     expect(dealer.round[2].cards.length).toBe(4);
 
   });
@@ -130,7 +126,6 @@ describe('Dealer Object', () => {
 
   it('Can have dealer stand when their hand total is >= 17 & <21', async () => {
     dealer.currentPlayerIndex += 2;
-    // console.log(dealer.currentPlayerIndex);
     dealer.round[2].cards.splice(1, 2);
     dealer.round[2].totalHandCount();
     dealer.dealerTurn();
@@ -142,8 +137,6 @@ describe('Dealer Object', () => {
     //dealer total is 20
     //player 1 will have 20 (A + 3 + 6)
     //player 2 will have 14 (A + 3)
-    console.log('player 1 bank = ', dealer.players[1].bank);
-    console.log('player 2 bank = ', dealer.players[0].bank);
     dealer.payout();
     expect(dealer.round[0].player.bank).toEqual(325);
     expect(dealer.round[1].player.bank).toEqual(450);

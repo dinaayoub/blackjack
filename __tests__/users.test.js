@@ -9,11 +9,11 @@ const options = {
   useFindAndModify: false
 };
 
-const getPlayer = require('../source/middleware/join');
-const updatePlayer = require('../source/middleware/update');
+const getPlayer = require('../source/database-operations/join');
+const updatePlayer = require('../source/database-operations/update');
 const Player = require('../source/player');
-const userData = new Player('3');
-userData.name = 'dina';
+const userData = new Player('5');
+userData.name = 'hello';
 
 describe('User Model Test', () => {
 
@@ -36,7 +36,6 @@ describe('User Model Test', () => {
 
   it('Can create & save a new user successfully', async () => {
     var user = await getPlayer(userData);
-    // console.log(user);
     expect(user.userid).toEqual(userData.userID);
     // Object Id should be defined when successfully saved to MongoDB.
     expect(user._id).toBeDefined();
@@ -46,12 +45,11 @@ describe('User Model Test', () => {
 
   it('Can retrieve an existing user successfully', async () => {
     var existingUser = await getPlayer(userData);
-    // console.log(existingUser);
     expect(existingUser.userid).toEqual(userData.userID);
   });
 
   it('Can update a player', async () => {
-    userData.name = 'tina';
+    userData.name = 'world';
     userData.bank += 100;
     var updatedPlayer = await updatePlayer(userData);
     expect(updatedPlayer.name).toEqual(userData.name);
